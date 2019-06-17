@@ -57,10 +57,10 @@ public class ClientNativeRun extends DefaultTask {
         configBuild.configClient();
 
         try {
-            Path omega = getProject().getLayout().getBuildDirectory().dir("client").get().getAsFile().toPath();
-            getProject().getLogger().debug("start running in " + omega.toString());
+            Path client = getProject().getLayout().getBuildDirectory().dir("client").get().getAsFile().toPath();
+            getProject().getLogger().debug("start running in " + client.toString());
 
-            Omega.nativeRun(omega, configBuild.getClientConfig(), getTarget());
+            Omega.nativeRun(client.toString(), configBuild.getClientConfig());
         } catch (Exception e) {
             e.printStackTrace();
         }
