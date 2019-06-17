@@ -76,7 +76,7 @@ class ConfigBuild {
         } else if (osname.contains("nux")) {
             hostTriplet = new TargetTriplet(Constants.AMD64_ARCH, Constants.HOST_LINUX, Constants.TARGET_LINUX);
         } else {
-            throw new RuntimeException("OS " + osname + "not supported");
+            throw new RuntimeException("OS " + osname + " not supported");
         }
         clientConfig.setHost(hostTriplet);
 
