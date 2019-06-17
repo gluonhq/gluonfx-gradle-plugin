@@ -69,33 +69,38 @@ class ConfigBuild {
         clientConfig.setJavaStaticSdkVersion(clientExtension.getJavaStaticSdkVersion());
         clientConfig.setJavafxStaticSdkVersion(clientExtension.getJavafxStaticSdkVersion());
 
-        TargetTriplet hostTriplet = null, targetTriplet = null;
+        String osname = System.getProperty("os.name", "Mac OS X").toLowerCase(Locale.ROOT);
+        TargetTriplet hostTriplet;
+        if (osname.contains("mac")) {
+            hostTriplet = new TargetTriplet(Constants.AMD64_ARCH, Constants.HOST_MAC, Constants.TARGET_MAC);
+        } else if (osname.contains("nux")) {
+            hostTriplet = new TargetTriplet(Constants.AMD64_ARCH, Constants.HOST_LINUX, Constants.TARGET_LINUX);
+        } else {
+            throw new RuntimeException("OS " + osname + "not supported");
+        }
+        clientConfig.setHost(hostTriplet);
+
+        TargetTriplet targetTriplet = null;
         String target = clientExtension.getTarget().toLowerCase(Locale.ROOT);
         switch (target) {
             case Constants.TARGET_HOST:
-                String osname = System.getProperty("os.name", "Mac OS X").toLowerCase(Locale.ROOT);
                 if (osname.contains("mac")) {
-                    hostTriplet = new TargetTriplet(Constants.AMD64_ARCH, Constants.HOST_MAC, Constants.TARGET_MAC);
                     targetTriplet = new TargetTriplet(Constants.AMD64_ARCH, Constants.HOST_MAC, Constants.TARGET_MAC);
                 } else if (osname.contains("nux")) {
-                    hostTriplet = new TargetTriplet(Constants.AMD64_ARCH, Constants.HOST_LINUX, Constants.TARGET_LINUX);
                     targetTriplet = new TargetTriplet(Constants.AMD64_ARCH, Constants.HOST_LINUX, Constants.TARGET_LINUX);
                 }
                 break;
             case Constants.TARGET_IOS:
-                hostTriplet = new TargetTriplet(Constants.AMD64_ARCH, Constants.HOST_MAC, Constants.TARGET_MAC);
                 targetTriplet = new TargetTriplet(Constants.ARM64_ARCH, Constants.HOST_MAC, Constants.TARGET_IOS);
                 break;
             case Constants.TARGET_IOS_SIM:
-                hostTriplet = new TargetTriplet(Constants.AMD64_ARCH, Constants.HOST_MAC, Constants.TARGET_MAC);
                 targetTriplet = new TargetTriplet(Constants.AMD64_ARCH, Constants.HOST_MAC, Constants.TARGET_IOS);
                 break;
             default:
-                   throw new RuntimeException("No valid target found for " + target);
+                throw new RuntimeException("No valid target found for " + target);
         }
-
         clientConfig.setTarget(targetTriplet);
-        clientConfig.setHost(hostTriplet);
+
         clientConfig.setBackend(clientExtension.getBackend().toLowerCase(Locale.ROOT));
         clientConfig.setBundlesList(clientExtension.getBundlesList());
         clientConfig.setResourcesList(clientExtension.getResourcesList());
