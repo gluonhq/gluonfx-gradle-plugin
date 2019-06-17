@@ -30,10 +30,11 @@
 package com.gluonhq.gradle.tasks;
 
 import com.gluonhq.gradle.ClientExtension;
-import com.gluonhq.omega.Config;
+import com.gluonhq.omega.Configuration;
 import com.gluonhq.omega.Omega;
+import com.gluonhq.omega.model.TargetTriplet;
+import com.gluonhq.omega.util.Constants;
 import org.gradle.api.Project;
-import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.DependencySet;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.plugins.JavaPlugin;
@@ -50,7 +51,7 @@ import java.util.stream.Collectors;
 
 class ConfigBuild {
 
-    private Config clientConfig;
+    private Configuration clientConfig;
     private final Project project;
     private final String target;
     private final ClientExtension clientExtension;
@@ -63,11 +64,43 @@ class ConfigBuild {
     }
 
     void configClient() {
-        clientConfig = new Config();
+        clientConfig = new Configuration();
         clientConfig.setGraalLibsVersion(clientExtension.getGraalLibsVersion());
         clientConfig.setJavaStaticSdkVersion(clientExtension.getJavaStaticSdkVersion());
         clientConfig.setJavafxStaticSdkVersion(clientExtension.getJavafxStaticSdkVersion());
-        clientConfig.setTarget(clientExtension.getTarget().toLowerCase(Locale.ROOT));
+
+        String osname = System.getProperty("os.name", "Mac OS X").toLowerCase(Locale.ROOT);
+        TargetTriplet hostTriplet;
+        if (osname.contains("mac")) {
+            hostTriplet = new TargetTriplet(Constants.AMD64_ARCH, Constants.HOST_MAC, Constants.TARGET_MAC);
+        } else if (osname.contains("nux")) {
+            hostTriplet = new TargetTriplet(Constants.AMD64_ARCH, Constants.HOST_LINUX, Constants.TARGET_LINUX);
+        } else {
+            throw new RuntimeException("OS " + osname + " not supported");
+        }
+        clientConfig.setHost(hostTriplet);
+
+        TargetTriplet targetTriplet = null;
+        String target = clientExtension.getTarget().toLowerCase(Locale.ROOT);
+        switch (target) {
+            case Constants.TARGET_HOST:
+                if (osname.contains("mac")) {
+                    targetTriplet = new TargetTriplet(Constants.AMD64_ARCH, Constants.HOST_MAC, Constants.TARGET_MAC);
+                } else if (osname.contains("nux")) {
+                    targetTriplet = new TargetTriplet(Constants.AMD64_ARCH, Constants.HOST_LINUX, Constants.TARGET_LINUX);
+                }
+                break;
+            case Constants.TARGET_IOS:
+                targetTriplet = new TargetTriplet(Constants.ARM64_ARCH, Constants.HOST_MAC, Constants.TARGET_IOS);
+                break;
+            case Constants.TARGET_IOS_SIM:
+                targetTriplet = new TargetTriplet(Constants.AMD64_ARCH, Constants.HOST_MAC, Constants.TARGET_IOS);
+                break;
+            default:
+                throw new RuntimeException("No valid target found for " + target);
+        }
+        clientConfig.setTarget(targetTriplet);
+
         clientConfig.setBackend(clientExtension.getBackend().toLowerCase(Locale.ROOT));
         clientConfig.setBundlesList(clientExtension.getBundlesList());
         clientConfig.setResourcesList(clientExtension.getResourcesList());
@@ -90,7 +123,7 @@ class ConfigBuild {
         clientConfig.setVerbose(clientExtension.isVerbose());
     }
 
-    Config getClientConfig() {
+    Configuration getClientConfig() {
         return clientConfig;
     }
 
@@ -101,7 +134,7 @@ class ConfigBuild {
         try {
             String mainClassName = clientConfig.getMainClassName();
             String name = clientConfig.getAppName();
-            for (Configuration configuration : project.getBuildscript().getConfigurations()) {
+            for (org.gradle.api.artifacts.Configuration configuration : project.getBuildscript().getConfigurations()) {
                 project.getLogger().debug("Configuration = " + configuration);
                 DependencySet deps = configuration.getAllDependencies();
                 project.getLogger().debug("Dependencies = " + deps);
@@ -126,7 +159,7 @@ class ConfigBuild {
             String cp = cp0 + File.pathSeparator;
             project.getLogger().debug("CP: " + cp);
 
-            Omega.nativeCompile(buildRoot, clientConfig, cp, target);
+            Omega.nativeCompile(buildRoot, clientConfig, cp);
         } catch (Exception e) {
             e.printStackTrace();
         }

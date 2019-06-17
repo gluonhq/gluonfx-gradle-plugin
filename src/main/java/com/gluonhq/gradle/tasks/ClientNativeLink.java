@@ -58,11 +58,11 @@ public class ClientNativeLink extends DefaultTask {
         configBuild.configClient();
 
         try {
-            File omega = getProject().getLayout().getBuildDirectory().dir("client").get().getAsFile();
-            Path tmpPath = omega.toPath().resolve("gvm").resolve("tmp");
+            File client = getProject().getLayout().getBuildDirectory().dir("client").get().getAsFile();
+            Path tmpPath = client.toPath().resolve("gvm").resolve("tmp");
             getProject().getLogger().debug("start linking in " + tmpPath.toString());
 
-            Omega.nativeLink(omega.getAbsolutePath(), tmpPath, configBuild.getClientConfig(), getTarget());
+            Omega.nativeLink(client.getAbsolutePath(), configBuild.getClientConfig());
         } catch (Exception e) {
             e.printStackTrace();
         }
