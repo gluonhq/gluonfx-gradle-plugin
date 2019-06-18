@@ -36,7 +36,7 @@ import java.util.List;
 
 public class ClientExtension {
 
-    private static final String DEFAULT_GRAAL_LIBS_VERSION = "20.0.0-ea+8";
+    private static final String DEFAULT_GRAAL_LIBS_VERSION = "20.0.0-ea+9";
     private static final String DEFAULT_JAVA_STATIC_SDK_VERSION = "11-ea+6";
     private static final String DEFAULT_JAVAFX_STATIC_SDK_VERSION = "13-ea+6";
     private static final String DEFAULT_TARGET = "host";
