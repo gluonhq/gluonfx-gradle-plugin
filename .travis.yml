@@ -29,7 +29,7 @@ deploy:
 
   # Deploy releases on every tag push
   - provider: script
-    script: ./gradlew publish -PgluonNexusUsername=$NEXUS_USERNAME -PgluonNexusPassword=$NEXUS_PASSWORD -PrepositoryUrl=https://nexus.gluonhq.com/nexus/content/repositories/releases
+    script: sh .ci/release.sh
     skip_cleanup: true
     on:
       tags: true
