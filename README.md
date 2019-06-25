@@ -18,7 +18,7 @@ Using the `plugins` DSL, add:
 
 
     plugins {
-        id 'com.gluonhq.client-gradle-plugin' version '0.0.3'
+        id 'com.gluonhq.client-gradle-plugin' version '0.0.10'
     }
     
 This requires adding the plugin repository to the `settings.gradle` file:
@@ -45,7 +45,7 @@ Alternatively, you can use the `buildscript` DSL:
             }
         }
         dependencies {
-            classpath 'com.gluonhq:client-gradle-plugin:0.0.3'
+            classpath 'com.gluonhq:client-gradle-plugin:0.0.10'
         }
     }
     apply plugin: 'com.gluonhq.client-gradle-plugin'
@@ -66,7 +66,7 @@ so it should be called only when the project is ready and runs fine on a VM.
 
 Run:
 
-    ./gradlew clean build nativeCompile
+    ./gradlew build nativeCompile
 
 The results will be available at `$buildDir/client/gvm`.
 
@@ -94,13 +94,13 @@ Run:
     
 Or run the three tasks combined:
 
-    ./gradlew clean build nativeBuild nativeRun
+    ./gradlew build nativeBuild nativeRun
     
 Or run directly the application from command line:
 
     build/client/$hostPlatform/$AppName/$AppName    
     
-On Mac OS X it will create a distributable application.
+It will create a distributable native application.
 
 ### 3. Specify plugin extensions
 
@@ -109,24 +109,32 @@ Only if you need to, you can modify the default settings, by specifying
 
     gluonClient {
         target = "host"
-        backend = "lir"
-        graalLibsVersion = "20.0.0-beta.01"
+        graalLibsVersion = "20.0.0-ea+12"
         graalLibsPath = ""
-        javaStaticSdkVersion = "13-ea+2"
-        javafxStaticSdkVersion = "13-ea+1"
+        javaStaticSdkVersion = "11-ea+6"
+        javafxStaticSdkVersion = "13-ea+7"
         bundlesList = []
         resourcesList = []
         reflectionList = []
         jniList = []
         delayInitList = []
         releaseSymbolsList = []
+        verbose = false
     }
     
 ### Requirements
 
-Set `JAVA_HOME` to JDK 11.
+At this moment the plugin is in beta, and supports Linux, Mac OS X and iOS platforms for now.
 
-For now, only Mac OS X is supported. Therefore, a Mac with MacOS X 10.13.2 or superior, and Xcode 9.2 or superior, available from the Mac App Store, are required.
+To use the plugin to develop and deploy native applications on Mac or iOS platforms, you need a Mac with MacOS X 10.13.2 or superior, and Xcode 9.2 or superior, available from the Mac App Store. Once Xcode is downloaded and installed, open it and accept the license terms.
+
+For now, only JDK 11 is supported. Any JDK 11 distribution that doesn't bundle JavaFX is valid, like:
+
+- [OpenJDK 11.0.2](https://download.java.net/java/GA/jdk11/9/GPL/openjdk-11.0.2_osx-x64_bin.tar.gz)
+
+- [AdoptOpenJDK 11.0.3](https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.3%2B7/OpenJDK11U-jdk_x64_mac_hotspot_11.0.3_7.tar.gz)
+
+Once downloaded and installed, set `JAVA_HOME` pointing to that JDK 11.
 
 Check the [documentation](https://docs.gluonhq.com/client) for more details about the plugin and running the [gradle samples](https://github.com/gluonhq/client-samples/tree/master/Gradle).
 
