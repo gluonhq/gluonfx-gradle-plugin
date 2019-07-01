@@ -48,6 +48,9 @@ public class AttachConfiguration {
     private Project project;
 
     private String version = "4.0.2";
+    private String configuration = "implementation";
+    private String oldConfiguration;
+
     private NamedDomainObjectContainer<AttachServiceDefinition> services;
 
     @Inject
@@ -68,6 +71,14 @@ public class AttachConfiguration {
         this.version = version;
     }
 
+    public void setConfiguration(String configuration) {
+        this.configuration = configuration;
+        applyConfiguration();
+    }
+
+    public String getConfiguration() {
+        return configuration;
+    }
     public Collection<AttachServiceDefinition> getServices() {
         return services;
     }
@@ -77,8 +88,7 @@ public class AttachConfiguration {
             for (String service : services) {
                 this.services.create(service);
             }
-            applyConfiguration(project.getConfigurations().getByName("implementation"),
-                    project.getExtensions().getByType(ClientExtension.class).getTarget());
+            applyConfiguration();
         }
     }
 
@@ -93,11 +103,17 @@ public class AttachConfiguration {
     /**
      * Add dependencies to the specified configuration. Only dependencies to services that support the provided
      * configuration will be included.
-     *
-     * @param configuration the configuration where the service dependencies are added to
-     * @param target the target platform
      */
-    private void applyConfiguration(Configuration configuration, String target) {
+    private void applyConfiguration() {
+        if (oldConfiguration != null) {
+            project.getConfigurations().getByName(oldConfiguration).getDependencies()
+                    .removeIf(dependency -> AttachResolver.DEPENDENCY_GROUP.equals(dependency.getGroup()));
+        }
+
+        String newConfiguration = getConfiguration();
+        Configuration configuration = project.getConfigurations().getByName(newConfiguration);
+        String target = project.getExtensions().getByType(ClientExtension.class).getTarget();
+
         project.getLogger().info("Adding Attach dependencies for target: " + target);
         if (services != null) {
             services.forEach(serviceDefinition -> project.getDependencies()
@@ -109,6 +125,8 @@ public class AttachConfiguration {
             utilDependencyNotationMap.put("version", getVersion());
             project.getDependencies().add(configuration.getName(), utilDependencyNotationMap);
         }
+
+        oldConfiguration = newConfiguration;
     }
 
     private Object generateDependencyNotation(Configuration configuration, AttachServiceDefinition pluginDefinition, String target) {
