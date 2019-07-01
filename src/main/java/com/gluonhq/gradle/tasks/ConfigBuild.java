@@ -53,12 +53,10 @@ class ConfigBuild {
 
     private Configuration clientConfig;
     private final Project project;
-    private final String target;
     private final ClientExtension clientExtension;
 
-    ConfigBuild(Project project, String target) {
+    ConfigBuild(Project project) {
         this.project = project;
-        this.target = target;
 
         clientExtension = project.getExtensions().getByType(ClientExtension.class);
     }

@@ -30,37 +30,32 @@
 package com.gluonhq.gradle.tasks;
 
 import com.gluonhq.omega.Omega;
-import org.gradle.api.DefaultTask;
-import org.gradle.api.tasks.Input;
+import com.gluonhq.omega.util.Constants;
+import org.gradle.api.Project;
 import org.gradle.api.tasks.TaskAction;
 
+import javax.inject.Inject;
 import java.io.File;
 import java.nio.file.Path;
 
-public class ClientNativeLink extends DefaultTask {
+public class ClientNativeLink extends ClientNativeBase {
 
-    private String target;
-
-    @Input
-    public String getTarget() {
-        return target;
-    }
-
-    public void setTarget(String target) {
-        this.target = target;
+    @Inject
+    public ClientNativeLink(Project project) {
+        super(project);
     }
 
     @TaskAction
     public void action() {
         getProject().getLogger().info("ClientNativeLink action");
 
-        ConfigBuild configBuild = new ConfigBuild(getProject(), getTarget());
+        ConfigBuild configBuild = new ConfigBuild(project);
         configBuild.configClient();
 
         try {
-            File client = getProject().getLayout().getBuildDirectory().dir("client").get().getAsFile();
-            Path tmpPath = client.toPath().resolve("gvm").resolve("tmp");
-            getProject().getLogger().debug("start linking in " + tmpPath.toString());
+            File client = project.getLayout().getBuildDirectory().dir(Constants.CLIENT_PATH).get().getAsFile();
+            Path tmpPath = client.toPath().resolve(Constants.GVM_PATH).resolve(Constants.TMP_PATH);
+            getProject().getLogger().debug("start linking at " + tmpPath.toString());
 
             Omega.nativeLink(client.getAbsolutePath(), configBuild.getClientConfig());
         } catch (Exception e) {

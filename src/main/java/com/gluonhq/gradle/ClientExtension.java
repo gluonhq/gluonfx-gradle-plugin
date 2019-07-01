@@ -30,6 +30,7 @@
 package com.gluonhq.gradle;
 
 import org.gradle.api.Project;
+import org.gradle.api.model.ObjectFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -147,7 +148,7 @@ public class ClientExtension {
      */
     private boolean verbose;
 
-    public ClientExtension(Project project) {
+    public ClientExtension(Project project, ObjectFactory objectFactory) {
         this.graalLibsVersion = DEFAULT_GRAAL_LIBS_VERSION;
         this.javaStaticSdkVersion = DEFAULT_JAVA_STATIC_SDK_VERSION;
         this.javafxStaticSdkVersion = DEFAULT_JAVAFX_STATIC_SDK_VERSION;

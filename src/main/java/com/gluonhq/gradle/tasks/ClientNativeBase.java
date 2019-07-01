@@ -31,19 +31,19 @@ package com.gluonhq.gradle.tasks;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Project;
-import org.gradle.api.tasks.TaskAction;
+import org.gradle.api.plugins.JavaPlugin;
 
 import javax.inject.Inject;
 
-public class ClientNativeBuild extends DefaultTask {
+abstract class ClientNativeBase extends DefaultTask {
+
+    final Project project;
 
     @Inject
-    public ClientNativeBuild(Project project) {
-        dependsOn(project.getTasks().findByName("nativeCompile"), project.getTasks().findByName("nativeLink"));
-    }
-
-    @TaskAction
-    public void action() {
-        getProject().getLogger().info("ClientNativeBuild action");
+    public ClientNativeBase(Project project) {
+        this.project = project;
+        project.getPluginManager().withPlugin("java", e ->
+                dependsOn(project.getTasks().findByName(JavaPlugin.CLASSES_TASK_NAME),
+                          project.getTasks().findByName(JavaPlugin.PROCESS_RESOURCES_TASK_NAME)));
     }
 }
