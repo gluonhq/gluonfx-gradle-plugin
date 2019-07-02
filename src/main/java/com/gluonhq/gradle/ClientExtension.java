@@ -29,7 +29,11 @@
  */
 package com.gluonhq.gradle;
 
+import com.gluonhq.gradle.attach.AttachConfiguration;
+import groovy.lang.Closure;
 import org.gradle.api.Project;
+import org.gradle.api.model.ObjectFactory;
+import org.gradle.util.ConfigureUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -147,7 +151,9 @@ public class ClientExtension {
      */
     private boolean verbose;
 
-    public ClientExtension(Project project) {
+    private AttachConfiguration attachConfiguration;
+
+    public ClientExtension(Project project, ObjectFactory objectFactory) {
         this.graalLibsVersion = DEFAULT_GRAAL_LIBS_VERSION;
         this.javaStaticSdkVersion = DEFAULT_JAVA_STATIC_SDK_VERSION;
         this.javafxStaticSdkVersion = DEFAULT_JAVAFX_STATIC_SDK_VERSION;
@@ -164,6 +170,8 @@ public class ClientExtension {
         this.useJNI = true;
         this.enableCheckHash = true;
         this.llcPath = "";
+
+        attachConfiguration = objectFactory.newInstance(AttachConfiguration.class, project);
     }
 
     public String getGraalLibsVersion() {
@@ -308,5 +316,13 @@ public class ClientExtension {
 
     public void setVerbose(boolean verbose) {
         this.verbose = verbose;
+    }
+
+    public void attachConfig(Closure configureClosure) {
+        ConfigureUtil.configure(configureClosure, attachConfiguration);
+    }
+
+    public AttachConfiguration getAttachConfig() {
+        return attachConfiguration;
     }
 }

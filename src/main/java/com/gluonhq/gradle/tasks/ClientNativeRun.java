@@ -30,35 +30,31 @@
 package com.gluonhq.gradle.tasks;
 
 import com.gluonhq.omega.Omega;
-import org.gradle.api.DefaultTask;
-import org.gradle.api.tasks.Input;
+import com.gluonhq.omega.util.Constants;
+import org.gradle.api.Project;
 import org.gradle.api.tasks.TaskAction;
 
+import javax.inject.Inject;
 import java.nio.file.Path;
 
-public class ClientNativeRun extends DefaultTask {
+public class ClientNativeRun extends ClientNativeBase {
 
-    private String target;
 
-    @Input
-    public String getTarget() {
-        return target;
-    }
-
-    public void setTarget(String target) {
-        this.target = target;
+    @Inject
+    public ClientNativeRun(Project project) {
+        super(project);
     }
 
     @TaskAction
     public void action() {
         getProject().getLogger().info("ClientNativeRun action");
 
-        ConfigBuild configBuild = new ConfigBuild(getProject(), getTarget());
+        ConfigBuild configBuild = new ConfigBuild(project);
         configBuild.configClient();
 
         try {
-            Path client = getProject().getLayout().getBuildDirectory().dir("client").get().getAsFile().toPath();
-            getProject().getLogger().debug("start running in " + client.toString());
+            Path client = project.getLayout().getBuildDirectory().dir(Constants.CLIENT_PATH).get().getAsFile().toPath();
+            getProject().getLogger().debug("start running at " + client.toString());
 
             Omega.nativeRun(client.toString(), configBuild.getClientConfig());
         } catch (Exception e) {

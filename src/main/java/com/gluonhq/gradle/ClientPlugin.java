@@ -35,34 +35,36 @@ import com.gluonhq.gradle.tasks.ClientNativeLink;
 import com.gluonhq.gradle.tasks.ClientNativeRun;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.model.ObjectFactory;
+
+import javax.inject.Inject;
 
 public class ClientPlugin implements Plugin<Project> {
 
+    public static final String NATIVE_COMPILE_TASK_NAME = "nativeCompile";
+    public static final String NATIVE_LINK_TASK_NAME = "nativeLink";
+    public static final String NATIVE_RUN_TASK_NAME = "nativeRun";
+    public static final String NATIVE_BUILD_TASK_NAME = "nativeBuild";
+
+
     private static final String CONFIGURATION_CLIENT = "client";
+
+    private ObjectFactory objectFactory;
+
+    @Inject
+    ClientPlugin(ObjectFactory objectFactory) {
+        this.objectFactory = objectFactory;
+    }
 
     @Override
     public void apply(Project project) {
         project.getConfigurations().create(CONFIGURATION_CLIENT);
 
-        ClientExtension client = project.getExtensions().create("gluonClient", ClientExtension.class, project);
+        project.getExtensions().create("gluonClient", ClientExtension.class, project, objectFactory);
 
-        project.afterEvaluate(a -> {
-            ClientNativeCompile nativeCompile = project.getTasks().create("nativeCompile", ClientNativeCompile.class);
-            nativeCompile.setTarget(client.getTarget());
-            nativeCompile.dependsOn(project.getTasks().findByName("classes"), project.getTasks().findByName("processResources"));
-
-            ClientNativeLink nativeLink = project.getTasks().create("nativeLink", ClientNativeLink.class);
-            nativeLink.setTarget(client.getTarget());
-            nativeLink.dependsOn(project.getTasks().findByName("classes"), project.getTasks().findByName("processResources"));
-
-            ClientNativeBuild nativeBuild = project.getTasks().create("nativeBuild", ClientNativeBuild.class);
-            nativeBuild.dependsOn(nativeCompile, nativeLink);
-
-            ClientNativeRun nativeRun = project.getTasks().create("nativeRun", ClientNativeRun.class);
-            nativeRun.setTarget(client.getTarget());
-            nativeRun.dependsOn(project.getTasks().findByName("classes"), project.getTasks().findByName("processResources"));
-
-            project.getLogger().debug("Applied client plugin, tasks = " + project.getAllTasks(true));
-        });
+        project.getTasks().create(NATIVE_COMPILE_TASK_NAME, ClientNativeCompile.class, project);
+        project.getTasks().create(NATIVE_LINK_TASK_NAME, ClientNativeLink.class, project);
+        project.getTasks().create(NATIVE_BUILD_TASK_NAME, ClientNativeBuild.class, project);
+        project.getTasks().create(NATIVE_RUN_TASK_NAME, ClientNativeRun.class, project);
     }
 }

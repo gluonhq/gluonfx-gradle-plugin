@@ -29,28 +29,21 @@
  */
 package com.gluonhq.gradle.tasks;
 
-import org.gradle.api.DefaultTask;
-import org.gradle.api.tasks.Input;
+import org.gradle.api.Project;
 import org.gradle.api.tasks.TaskAction;
 
-public class ClientNativeCompile extends DefaultTask {
+import javax.inject.Inject;
 
-    private String target;
+public class ClientNativeCompile extends ClientNativeBase {
 
-    @Input
-    public String getTarget() {
-        return target;
-    }
-
-    public void setTarget(String target) {
-        this.target = target;
+    @Inject
+    public ClientNativeCompile(Project project) {
+        super(project);
     }
 
     @TaskAction
     public void action() {
         getProject().getLogger().debug("ClientNativeCompile action");
-
-        ConfigBuild configBuild = new ConfigBuild(getProject(), getTarget());
-        configBuild.build();
+        new ConfigBuild(project).build();
     }
 }
