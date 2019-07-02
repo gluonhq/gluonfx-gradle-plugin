@@ -49,9 +49,9 @@ public class AttachConfiguration {
 
     private String version = "4.0.2";
     private String configuration = "implementation";
-    private String oldConfiguration;
 
     private NamedDomainObjectContainer<AttachServiceDefinition> services;
+    private Configuration lastAppliedConfiguration;
 
     @Inject
     public AttachConfiguration(Project project) {
@@ -105,13 +105,12 @@ public class AttachConfiguration {
      * configuration will be included.
      */
     private void applyConfiguration() {
-        if (oldConfiguration != null) {
-            project.getConfigurations().getByName(oldConfiguration).getDependencies()
+        if (lastAppliedConfiguration != null) {
+            lastAppliedConfiguration.getDependencies()
                     .removeIf(dependency -> AttachResolver.DEPENDENCY_GROUP.equals(dependency.getGroup()));
         }
 
-        String newConfiguration = getConfiguration();
-        Configuration configuration = project.getConfigurations().getByName(newConfiguration);
+        Configuration configuration = project.getConfigurations().getByName(getConfiguration());
         String target = project.getExtensions().getByType(ClientExtension.class).getTarget();
 
         project.getLogger().info("Adding Attach dependencies for target: " + target);
@@ -126,7 +125,7 @@ public class AttachConfiguration {
             project.getDependencies().add(configuration.getName(), utilDependencyNotationMap);
         }
 
-        oldConfiguration = newConfiguration;
+        lastAppliedConfiguration = configuration;
     }
 
     private Object generateDependencyNotation(Configuration configuration, AttachServiceDefinition pluginDefinition, String target) {
