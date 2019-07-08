@@ -22,7 +22,7 @@ cache:
 deploy:
   # Deploy snapshots on every commit made to master
   - provider: script
-    script: ./gradlew publish -PgluonNexusUsername=$NEXUS_USERNAME -PgluonNexusPassword=$NEXUS_PASSWORD
+    script: sh .ci/deploy-snapshot.sh
     skip_cleanup: true
     on:
       branch: master
