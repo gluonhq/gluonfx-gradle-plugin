@@ -30,6 +30,7 @@
 package com.gluonhq.gradle;
 
 import com.gluonhq.gradle.attach.AttachConfiguration;
+import com.gluonhq.gradle.ios.IOSExtension;
 import groovy.lang.Closure;
 import org.gradle.api.Project;
 import org.gradle.api.model.ObjectFactory;
@@ -153,6 +154,8 @@ public class ClientExtension {
 
     private AttachConfiguration attachConfiguration;
 
+    private IOSExtension iosExtension;
+
     public ClientExtension(Project project, ObjectFactory objectFactory) {
         this.graalLibsVersion = DEFAULT_GRAAL_LIBS_VERSION;
         this.javaStaticSdkVersion = DEFAULT_JAVA_STATIC_SDK_VERSION;
@@ -172,6 +175,8 @@ public class ClientExtension {
         this.llcPath = "";
 
         attachConfiguration = objectFactory.newInstance(AttachConfiguration.class, project);
+
+        iosExtension = project.getExtensions().create("ios", IOSExtension.class, project);
     }
 
     public String getGraalLibsVersion() {
@@ -325,4 +330,13 @@ public class ClientExtension {
     public AttachConfiguration getAttachConfig() {
         return attachConfiguration;
     }
+
+    public void setIosExtension(IOSExtension iosExtension) {
+        this.iosExtension = iosExtension;
+    }
+
+    public IOSExtension getIosExtension() {
+        return iosExtension;
+    }
+
 }

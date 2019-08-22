@@ -31,6 +31,7 @@ package com.gluonhq.gradle.tasks;
 
 import com.gluonhq.gradle.ClientExtension;
 import com.gluonhq.omega.Configuration;
+import com.gluonhq.omega.IOSConfiguration;
 import com.gluonhq.omega.Omega;
 import com.gluonhq.omega.model.TargetTriplet;
 import com.gluonhq.omega.util.Constants;
@@ -119,6 +120,14 @@ class ConfigBuild {
         clientConfig.setEnableCheckHash(clientExtension.isEnableCheckHash());
         clientConfig.setUseJNI(clientExtension.isUseJNI());
         clientConfig.setVerbose(clientExtension.isVerbose());
+
+        IOSConfiguration iosConfiguration = new IOSConfiguration();
+        iosConfiguration.setProvidedSigningIdentity(clientExtension.getIosExtension().getSigningIdentity());
+        iosConfiguration.setProvidedProvisioningProfile(clientExtension.getIosExtension().getProvisioningProfile());
+        iosConfiguration.setSimulatorDevice(clientExtension.getIosExtension().getSimulatorDevice());
+        iosConfiguration.setFrameworks(clientExtension.getIosExtension().getFrameworks());
+        iosConfiguration.setFrameworksPaths(clientExtension.getIosExtension().getFrameworksPaths());
+        clientConfig.setIosConfiguration(iosConfiguration);
     }
 
     Configuration getClientConfig() {
