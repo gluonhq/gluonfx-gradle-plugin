@@ -68,11 +68,16 @@ class ConfigBuild {
         clientConfig.setJavafxStaticSdkVersion(clientExtension.getJavafxStaticSdkVersion());
 
         String osname = System.getProperty("os.name", "Mac OS X").toLowerCase(Locale.ROOT);
+        String osarch = System.getProperty("os.arch", "").toLowerCase(Locale.ROOT);
         TargetTriplet hostTriplet;
         if (osname.contains("mac")) {
             hostTriplet = new TargetTriplet(Constants.AMD64_ARCH, Constants.HOST_MAC, Constants.TARGET_MAC);
         } else if (osname.contains("nux")) {
-            hostTriplet = new TargetTriplet(Constants.AMD64_ARCH, Constants.HOST_LINUX, Constants.TARGET_LINUX);
+            if (osarch.equals("aarch64")) {
+                hostTriplet = new TargetTriplet(Constants.ARM64_ARCH, Constants.HOST_LINUX, Constants.TARGET_LINUX);
+            } else {
+                hostTriplet = new TargetTriplet(Constants.AMD64_ARCH, Constants.HOST_LINUX, Constants.TARGET_LINUX);
+            }
         } else {
             throw new RuntimeException("OS " + osname + " not supported");
         }
@@ -82,11 +87,7 @@ class ConfigBuild {
         String target = clientExtension.getTarget().toLowerCase(Locale.ROOT);
         switch (target) {
             case Constants.TARGET_HOST:
-                if (osname.contains("mac")) {
-                    targetTriplet = new TargetTriplet(Constants.AMD64_ARCH, Constants.HOST_MAC, Constants.TARGET_MAC);
-                } else if (osname.contains("nux")) {
-                    targetTriplet = new TargetTriplet(Constants.AMD64_ARCH, Constants.HOST_LINUX, Constants.TARGET_LINUX);
-                }
+                targetTriplet = hostTriplet;
                 break;
             case Constants.TARGET_IOS:
                 targetTriplet = new TargetTriplet(Constants.ARM64_ARCH, Constants.HOST_MAC, Constants.TARGET_IOS);
