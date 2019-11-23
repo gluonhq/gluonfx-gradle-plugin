@@ -29,13 +29,12 @@
  */
 package com.gluonhq.gradle.tasks;
 
-import com.gluonhq.omega.Omega;
-import com.gluonhq.omega.util.Constants;
+import com.gluonhq.substrate.Constants;
+import com.gluonhq.substrate.SubstrateDispatcher;
 import org.gradle.api.Project;
 import org.gradle.api.tasks.TaskAction;
 
 import javax.inject.Inject;
-import java.io.File;
 import java.nio.file.Path;
 
 public class ClientNativeLink extends ClientNativeBase {
@@ -53,11 +52,11 @@ public class ClientNativeLink extends ClientNativeBase {
         configBuild.configClient();
 
         try {
-            File client = project.getLayout().getBuildDirectory().dir(Constants.CLIENT_PATH).get().getAsFile();
-            Path tmpPath = client.toPath().resolve(Constants.GVM_PATH).resolve(Constants.TMP_PATH);
+            Path clientPath = project.getLayout().getBuildDirectory().dir(Constants.CLIENT_PATH).get().getAsFile().toPath();
+            Path tmpPath = clientPath.resolve(Constants.GVM_PATH).resolve(Constants.TMP_PATH);
             getProject().getLogger().debug("start linking at " + tmpPath.toString());
 
-            Omega.nativeLink(client.getAbsolutePath(), configBuild.getClientConfig());
+            SubstrateDispatcher.nativeLink(clientPath, configBuild.getClientConfig());
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -30,11 +30,12 @@
 package com.gluonhq.gradle.tasks;
 
 import com.gluonhq.gradle.ClientExtension;
-import com.gluonhq.omega.Configuration;
-import com.gluonhq.omega.IOSConfiguration;
-import com.gluonhq.omega.Omega;
-import com.gluonhq.omega.model.TargetTriplet;
-import com.gluonhq.omega.util.Constants;
+import com.gluonhq.substrate.Constants;
+import com.gluonhq.substrate.SubstrateDispatcher;
+import com.gluonhq.substrate.model.IosSigningConfiguration;
+import com.gluonhq.substrate.model.ProjectConfiguration;
+import com.gluonhq.substrate.model.Triplet;
+import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.DependencySet;
 import org.gradle.api.file.FileCollection;
@@ -48,11 +49,12 @@ import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 class ConfigBuild {
 
-    private Configuration clientConfig;
+    private ProjectConfiguration clientConfig;
     private final Project project;
     private final ClientExtension clientExtension;
 
@@ -63,37 +65,31 @@ class ConfigBuild {
     }
 
     void configClient() {
-        clientConfig = new Configuration();
-        clientConfig.setGraalLibsVersion(clientExtension.getGraalLibsVersion());
+        clientConfig = new ProjectConfiguration();
         clientConfig.setJavaStaticSdkVersion(clientExtension.getJavaStaticSdkVersion());
         clientConfig.setJavafxStaticSdkVersion(clientExtension.getJavafxStaticSdkVersion());
 
         String osname = System.getProperty("os.name", "Mac OS X").toLowerCase(Locale.ROOT);
-        TargetTriplet hostTriplet;
+        Triplet hostTriplet;
         if (osname.contains("mac")) {
-            hostTriplet = new TargetTriplet(Constants.AMD64_ARCH, Constants.HOST_MAC, Constants.TARGET_MAC);
+            hostTriplet = new Triplet(Constants.Profile.MACOS);
         } else if (osname.contains("nux")) {
-            hostTriplet = new TargetTriplet(Constants.AMD64_ARCH, Constants.HOST_LINUX, Constants.TARGET_LINUX);
+            hostTriplet = new Triplet(Constants.Profile.LINUX);
         } else {
             throw new RuntimeException("OS " + osname + " not supported");
         }
-        clientConfig.setHost(hostTriplet);
 
-        TargetTriplet targetTriplet = null;
+        Triplet targetTriplet;
         String target = clientExtension.getTarget().toLowerCase(Locale.ROOT);
         switch (target) {
             case Constants.TARGET_HOST:
-                if (osname.contains("mac")) {
-                    targetTriplet = new TargetTriplet(Constants.AMD64_ARCH, Constants.HOST_MAC, Constants.TARGET_MAC);
-                } else if (osname.contains("nux")) {
-                    targetTriplet = new TargetTriplet(Constants.AMD64_ARCH, Constants.HOST_LINUX, Constants.TARGET_LINUX);
-                }
+                targetTriplet = hostTriplet;
                 break;
             case Constants.TARGET_IOS:
-                targetTriplet = new TargetTriplet(Constants.ARM64_ARCH, Constants.HOST_MAC, Constants.TARGET_IOS);
+                targetTriplet = new Triplet(Constants.Profile.IOS);
                 break;
             case Constants.TARGET_IOS_SIM:
-                targetTriplet = new TargetTriplet(Constants.AMD64_ARCH, Constants.HOST_MAC, Constants.TARGET_IOS);
+                targetTriplet = new Triplet(Constants.Profile.IOS_SIM);
                 break;
             default:
                 throw new RuntimeException("No valid target found for " + target);
@@ -114,29 +110,35 @@ class ConfigBuild {
 
         List<Path> classPath = getClassPathFromSourceSets();
         clientConfig.setUseJavaFX(classPath.stream().anyMatch(f -> f.getFileName().toString().contains("javafx")));
-        clientConfig.setGraalLibsUserPath(clientExtension.getGraalLibsPath());
+        clientConfig.setGraalPath(getGraalHome().get());
 
         clientConfig.setLlcPath(clientExtension.getLlcPath());
         clientConfig.setEnableCheckHash(clientExtension.isEnableCheckHash());
         clientConfig.setUseJNI(clientExtension.isUseJNI());
         clientConfig.setVerbose(clientExtension.isVerbose());
 
-        IOSConfiguration iosConfiguration = new IOSConfiguration();
+        IosSigningConfiguration iosConfiguration = new IosSigningConfiguration();
         iosConfiguration.setProvidedSigningIdentity(clientExtension.getIosExtension().getSigningIdentity());
         iosConfiguration.setProvidedProvisioningProfile(clientExtension.getIosExtension().getProvisioningProfile());
         iosConfiguration.setSimulatorDevice(clientExtension.getIosExtension().getSimulatorDevice());
-        iosConfiguration.setFrameworks(clientExtension.getIosExtension().getFrameworks());
-        iosConfiguration.setFrameworksPaths(clientExtension.getIosExtension().getFrameworksPaths());
-        clientConfig.setIosConfiguration(iosConfiguration);
+        // TODO: Allow frameworks
+//        iosConfiguration.setFrameworks(clientExtension.getIosExtension().getFrameworks());
+//        iosConfiguration.setFrameworksPaths(clientExtension.getIosExtension().getFrameworksPaths());
+        clientConfig.setIosSigningConfiguration(iosConfiguration);
     }
 
-    Configuration getClientConfig() {
+    ProjectConfiguration getClientConfig() {
         return clientConfig;
     }
 
     void build() {
-
         configClient();
+
+        if (!getGraalHome().isPresent()) {
+            throw new GradleException("GraalVM installation directory not found." +
+                    " Either set GRAALVM_HOME as an environment variable or" +
+                    " set graalvmHome in the client-plugin configuration");
+        }
 
         try {
             String mainClassName = clientConfig.getMainClassName();
@@ -160,13 +162,13 @@ class ConfigBuild {
                     .map(Path::toString)
                     .collect(Collectors.joining(File.pathSeparator));
 
-            String buildRoot = project.getLayout().getBuildDirectory().dir("client").get().getAsFile().getAbsolutePath();
-            project.getLogger().debug("BuildRoot: " + buildRoot);
+            Path buildRootPath = project.getLayout().getBuildDirectory().dir("client").get().getAsFile().toPath();
+            project.getLogger().debug("BuildRoot: " + buildRootPath);
 
             String cp = cp0 + File.pathSeparator;
             project.getLogger().debug("CP: " + cp);
 
-            Omega.nativeCompile(buildRoot, clientConfig, cp);
+            SubstrateDispatcher.nativeCompile(buildRootPath, clientConfig, cp);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -182,6 +184,16 @@ class ConfigBuild {
                     .map(File::toPath).collect(Collectors.toList());
         }
         return classPath;
+    }
+
+    private Optional<String> getGraalHome() {
+        String graalvmHome = clientExtension.getGraalvmHome();
+        if (graalvmHome != null) {
+            return Optional.of(graalvmHome);
+        } else if (System.getenv("GRAALVM_HOME") != null) {
+            return Optional.of(System.getenv("GRAALVM_HOME"));
+        }
+        return Optional.empty();
     }
 
 }

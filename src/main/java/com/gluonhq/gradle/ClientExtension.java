@@ -41,9 +41,8 @@ import java.util.List;
 
 public class ClientExtension {
 
-    private static final String DEFAULT_GRAAL_LIBS_VERSION = "20.0.0-ea+17";
-    private static final String DEFAULT_JAVA_STATIC_SDK_VERSION = "11-ea+6";
-    private static final String DEFAULT_JAVAFX_STATIC_SDK_VERSION = "13-ea+7";
+    private static final String DEFAULT_JAVA_STATIC_SDK_VERSION = "14-ea+3";
+    private static final String DEFAULT_JAVAFX_STATIC_SDK_VERSION = "14-ea+gvm1";
     private static final String DEFAULT_TARGET = "host";
 
     /**
@@ -119,15 +118,9 @@ public class ClientExtension {
     private String javafxStaticSdkVersion;
 
     /**
-     * The Graal libs version
+     * The GraalVM Home directory
      */
-    private String graalLibsVersion;
-
-    /**
-     * The omega dependencies directory.
-     * By default it is set to $userHome/.gluon/omega/graalLibs/$version/bundle/lib)
-     */
-    private String graalLibsPath;
+    private String graalvmHome;
 
     /**
      * The path to the directory containing LLC tool.
@@ -157,7 +150,6 @@ public class ClientExtension {
     private IOSExtension iosExtension;
 
     public ClientExtension(Project project, ObjectFactory objectFactory) {
-        this.graalLibsVersion = DEFAULT_GRAAL_LIBS_VERSION;
         this.javaStaticSdkVersion = DEFAULT_JAVA_STATIC_SDK_VERSION;
         this.javafxStaticSdkVersion = DEFAULT_JAVAFX_STATIC_SDK_VERSION;
         this.target = DEFAULT_TARGET;
@@ -179,16 +171,8 @@ public class ClientExtension {
         iosExtension = project.getExtensions().create("ios", IOSExtension.class, project);
     }
 
-    public String getGraalLibsVersion() {
-        return graalLibsVersion;
-    }
-
-    public void setGraalLibsVersion(String graalLibsVersion) {
-        this.graalLibsVersion = graalLibsVersion;
-    }
-
-    public String getGraalLibsPath() {
-        return graalLibsPath;
+    public String getGraalvmHome() {
+        return graalvmHome;
     }
 
     public String getLlcPath() {
@@ -199,8 +183,8 @@ public class ClientExtension {
         this.llcPath = llcPath;
     }
 
-    public void setGraalLibsPath(String graalLibsPath) {
-        this.graalLibsPath = graalLibsPath;
+    public void setGraalvmHome(String graalvmHome) {
+        this.graalvmHome = graalvmHome;
     }
 
     public String getJavaStaticSdkVersion() {

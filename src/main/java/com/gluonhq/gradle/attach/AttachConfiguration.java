@@ -32,7 +32,7 @@
 package com.gluonhq.gradle.attach;
 
 import com.gluonhq.gradle.ClientExtension;
-import com.gluonhq.omega.attach.AttachResolver;
+import com.gluonhq.substrate.gluon.AttachResolver;
 import org.gradle.api.Action;
 import org.gradle.api.NamedDomainObjectContainer;
 import org.gradle.api.Project;

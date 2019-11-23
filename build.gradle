@@ -7,7 +7,7 @@ plugins {
 }
 
 group 'com.gluonhq'
-version '0.0.15-SNAPSHOT'
+version '0.1.4-SNAPSHOT'
 
 sourceCompatibility = 11
 targetCompatibility = 11
@@ -21,14 +21,14 @@ repositories {
         url "https://nexus.gluonhq.com/nexus/content/repositories/releases"
     }
     maven {
-        url "https://nexus.gluonhq.com/nexus/content/repositories/public-snapshots"
+        url "https://oss.sonatype.org/content/repositories/snapshots"
     }
 }
 
 dependencies {
     implementation gradleApi()
 
-    implementation 'com.gluonhq:omega:0.0.15-SNAPSHOT'
+    implementation 'com.gluonhq:substrate:0.0.4-SNAPSHOT'
 }
 
 gradlePlugin {
@@ -45,7 +45,7 @@ gradlePlugin {
 pluginBundle {
     website = 'https://github.com/gluonhq/client-gradle-plugin'
     vcsUrl = 'https://github.com/gluonhq/client-gradle-plugin'
-    tags = [ 'java', 'javafx', 'gluon', 'client', 'graal', 'aot' ]
+    tags = [ 'java', 'javafx', 'gluon', 'client', 'substrate', 'graalvm', 'aot' ]
 }
 
 publishing {
