@@ -31,9 +31,9 @@ package com.gluonhq.gradle.tasks;
 
 import com.gluonhq.gradle.ClientExtension;
 import com.gluonhq.substrate.Constants;
+import com.gluonhq.substrate.ProjectConfiguration;
 import com.gluonhq.substrate.SubstrateDispatcher;
 import com.gluonhq.substrate.model.IosSigningConfiguration;
-import com.gluonhq.substrate.model.ProjectConfiguration;
 import com.gluonhq.substrate.model.Triplet;
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
@@ -65,8 +65,10 @@ class ConfigBuild {
     }
 
     void configClient() {
-        clientConfig = new ProjectConfiguration();
-        clientConfig.setJavaStaticSdkVersion(clientExtension.getJavaStaticSdkVersion());
+        clientConfig = new ProjectConfiguration((String) project.getProperties().get("mainClassName"));
+        if (clientExtension.getJavaStaticSdkVersion() != null) {
+            clientConfig.setJavaStaticSdkVersion(clientExtension.getJavaStaticSdkVersion());
+        }
         clientConfig.setJavafxStaticSdkVersion(clientExtension.getJavafxStaticSdkVersion());
 
         String osname = System.getProperty("os.name", "Mac OS X").toLowerCase(Locale.ROOT);
@@ -96,25 +98,15 @@ class ConfigBuild {
         }
         clientConfig.setTarget(targetTriplet);
 
-        clientConfig.setBackend(clientExtension.getBackend().toLowerCase(Locale.ROOT));
         clientConfig.setBundlesList(clientExtension.getBundlesList());
         clientConfig.setResourcesList(clientExtension.getResourcesList());
-        clientConfig.setDelayInitList(clientExtension.getDelayInitList());
         clientConfig.setJniList(clientExtension.getJniList());
         clientConfig.setReflectionList(clientExtension.getReflectionList());
-        clientConfig.setRuntimeArgsList(clientExtension.getRuntimeArgsList());
-        clientConfig.setReleaseSymbolsList(clientExtension.getReleaseSymbolsList());
 
-        clientConfig.setMainClassName((String) project.getProperties().get("mainClassName"));
         clientConfig.setAppName(project.getName());
 
-        List<Path> classPath = getClassPathFromSourceSets();
-        clientConfig.setUseJavaFX(classPath.stream().anyMatch(f -> f.getFileName().toString().contains("javafx")));
-        clientConfig.setGraalPath(getGraalHome().get());
+        clientConfig.setGraalPath(Path.of(getGraalHome().get()));
 
-        clientConfig.setLlcPath(clientExtension.getLlcPath());
-        clientConfig.setEnableCheckHash(clientExtension.isEnableCheckHash());
-        clientConfig.setUseJNI(clientExtension.isUseJNI());
         clientConfig.setVerbose(clientExtension.isVerbose());
 
         IosSigningConfiguration iosConfiguration = new IosSigningConfiguration();
@@ -122,8 +114,6 @@ class ConfigBuild {
         iosConfiguration.setProvidedProvisioningProfile(clientExtension.getIosExtension().getProvisioningProfile());
         iosConfiguration.setSimulatorDevice(clientExtension.getIosExtension().getSimulatorDevice());
         // TODO: Allow frameworks
-//        iosConfiguration.setFrameworks(clientExtension.getIosExtension().getFrameworks());
-//        iosConfiguration.setFrameworksPaths(clientExtension.getIosExtension().getFrameworksPaths());
         clientConfig.setIosSigningConfiguration(iosConfiguration);
     }
 
@@ -150,28 +140,24 @@ class ConfigBuild {
                 deps.forEach(dep -> project.getLogger().debug("Dependency = " + dep));
             }
             project.getLogger().debug("mainClassName = " + mainClassName + " and app name = " + name);
-            JavaCompile compileTask = (JavaCompile) project.getTasks().findByName(JavaPlugin.COMPILE_JAVA_TASK_NAME);
-            FileCollection classpath = compileTask.getClasspath();
-            project.getLogger().debug("Compile classPath = " + classpath.getFiles());
-            project.getLogger().debug("Java Class Path = " + System.getProperty("java.class.path"));
-
-            List<Path> classPath = getClassPathFromSourceSets();
-            project.getLogger().debug("Runtime classPath = " + classPath);
-
-            String cp0 = classPath.stream()
-                    .map(Path::toString)
-                    .collect(Collectors.joining(File.pathSeparator));
 
             Path buildRootPath = project.getLayout().getBuildDirectory().dir("client").get().getAsFile().toPath();
             project.getLogger().debug("BuildRoot: " + buildRootPath);
 
-            String cp = cp0 + File.pathSeparator;
-            project.getLogger().debug("CP: " + cp);
-
-            SubstrateDispatcher.nativeCompile(buildRootPath, clientConfig, cp);
+            SubstrateDispatcher dispatcher = new SubstrateDispatcher(buildRootPath, clientConfig);
+            dispatcher.nativeCompile(getClassPath());
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    String getClassPath() {
+        List<Path> classPath = getClassPathFromSourceSets();
+        project.getLogger().debug("Runtime classPath = " + classPath);
+        String cp = classPath.stream()
+                .map(Path::toString)
+                .collect(Collectors.joining(File.pathSeparator)) + File.pathSeparator;
+        return cp;
     }
 
     private List<Path> getClassPathFromSourceSets() {

@@ -56,7 +56,8 @@ public class ClientNativeLink extends ClientNativeBase {
             Path tmpPath = clientPath.resolve(Constants.GVM_PATH).resolve(Constants.TMP_PATH);
             getProject().getLogger().debug("start linking at " + tmpPath.toString());
 
-            SubstrateDispatcher.nativeLink(clientPath, configBuild.getClientConfig());
+            SubstrateDispatcher dispatcher = new SubstrateDispatcher(clientPath, configBuild.getClientConfig());
+            dispatcher.nativeLink(configBuild.getClassPath());
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -28,7 +28,7 @@ repositories {
 dependencies {
     implementation gradleApi()
 
-    implementation 'com.gluonhq:substrate:0.0.4-SNAPSHOT'
+    implementation 'com.gluonhq:substrate:0.0.6-SNAPSHOT'
 }
 
 gradlePlugin {

@@ -56,7 +56,8 @@ public class ClientNativeRun extends ClientNativeBase {
             Path clientPath = project.getLayout().getBuildDirectory().dir(Constants.CLIENT_PATH).get().getAsFile().toPath();
             getProject().getLogger().debug("start running at " + clientPath.toString());
 
-            SubstrateDispatcher.nativeRun(clientPath, configBuild.getClientConfig());
+            SubstrateDispatcher dispatcher = new SubstrateDispatcher(clientPath, configBuild.getClientConfig());
+            dispatcher.nativeRun();
         } catch (Exception e) {
             e.printStackTrace();
         }

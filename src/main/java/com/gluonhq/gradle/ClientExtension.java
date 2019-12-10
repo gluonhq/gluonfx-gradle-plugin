@@ -41,7 +41,6 @@ import java.util.List;
 
 public class ClientExtension {
 
-    private static final String DEFAULT_JAVA_STATIC_SDK_VERSION = "14-ea+3";
     private static final String DEFAULT_JAVAFX_STATIC_SDK_VERSION = "14-ea+gvm1";
     private static final String DEFAULT_TARGET = "host";
 
@@ -52,13 +51,6 @@ public class ClientExtension {
      * Default is "host"
      */
     private String target;
-
-    /**
-     * Defines the intermediate representation.
-     * It can be set to LLVM or LIR.
-     * By default is not set and will be set based on the target platform
-     */
-    private String backend;
 
     /**
      * List of additional full qualified bundle resources that will be added to
@@ -90,24 +82,6 @@ public class ClientExtension {
     private final List<String> jniList;
 
     /**
-     * List of additional full qualified classes that will be added to the default
-     * delayed initialization list
-     */
-    private final List<String> delayInitList;
-
-    /**
-     * List of additional JNI functions that will be added to the default
-     * release symbols list, that already includes most of the JNI methods.
-     */
-    private final List<String> releaseSymbolsList;
-
-    /**
-     * List of additional runtime arguments that could be required to run the
-     * application
-     */
-    private final List<String> runtimeArgsList;
-
-    /**
      * The Java static SDK version
      */
     private String javaStaticSdkVersion;
@@ -123,23 +97,6 @@ public class ClientExtension {
     private String graalvmHome;
 
     /**
-     * The path to the directory containing LLC tool.
-     */
-    private String llcPath;
-
-    /**
-     * Enables the use of JNI platform
-     * By default is true
-     */
-    private boolean useJNI;
-
-    /**
-     * Enables hash checking to verify integrity of Graal and Java/JavaFX files
-     * By default is true
-     */
-    private boolean enableCheckHash;
-
-    /**
      * Enables verbose output
      * By default is false
      */
@@ -150,21 +107,12 @@ public class ClientExtension {
     private IOSExtension iosExtension;
 
     public ClientExtension(Project project, ObjectFactory objectFactory) {
-        this.javaStaticSdkVersion = DEFAULT_JAVA_STATIC_SDK_VERSION;
         this.javafxStaticSdkVersion = DEFAULT_JAVAFX_STATIC_SDK_VERSION;
         this.target = DEFAULT_TARGET;
-        this.backend = "";
         this.bundlesList = new ArrayList<>();
         this.resourcesList = new ArrayList<>();
         this.reflectionList = new ArrayList<>();
         this.jniList = new ArrayList<>();
-        this.delayInitList = new ArrayList<>();
-        this.runtimeArgsList = new ArrayList<>();
-        this.releaseSymbolsList = new ArrayList<>();
-
-        this.useJNI = true;
-        this.enableCheckHash = true;
-        this.llcPath = "";
 
         attachConfiguration = objectFactory.newInstance(AttachConfiguration.class, project);
 
@@ -173,14 +121,6 @@ public class ClientExtension {
 
     public String getGraalvmHome() {
         return graalvmHome;
-    }
-
-    public String getLlcPath() {
-        return llcPath;
-    }
-
-    public void setLlcPath(String llcPath) {
-        this.llcPath = llcPath;
     }
 
     public void setGraalvmHome(String graalvmHome) {
@@ -209,14 +149,6 @@ public class ClientExtension {
 
     public void setTarget(String target) {
         this.target = target;
-    }
-
-    public String getBackend() {
-        return backend;
-    }
-
-    public void setBackend(String backend) {
-        this.backend = backend;
     }
 
     public List<String> getBundlesList() {
@@ -253,50 +185,6 @@ public class ClientExtension {
 
     public List<String> getJniList() {
         return jniList;
-    }
-
-
-    public List<String> getDelayInitList() {
-        return delayInitList;
-    }
-
-    public void setDelayInitList(List<String> delayInitList) {
-        this.delayInitList.clear();
-        this.delayInitList.addAll(delayInitList);
-    }
-
-    public List<String> getRuntimeArgsList() {
-        return runtimeArgsList;
-    }
-
-    public void setRuntimeArgsList(List<String> runtimeArgsList) {
-        this.runtimeArgsList.clear();
-        this.runtimeArgsList.addAll(runtimeArgsList);
-    }
-
-    public List<String> getReleaseSymbolsList() {
-        return releaseSymbolsList;
-    }
-
-    public void setReleaseSymbolsList(List<String> releaseSymbolsList) {
-        this.releaseSymbolsList.clear();
-        this.releaseSymbolsList.addAll(releaseSymbolsList);
-    }
-
-    public boolean isEnableCheckHash() {
-        return enableCheckHash;
-    }
-
-    public void setEnableCheckHash(boolean enableCheckHash) {
-        this.enableCheckHash = enableCheckHash;
-    }
-
-    public boolean isUseJNI() {
-        return useJNI;
-    }
-
-    public void setUseJNI(boolean useJNI) {
-        this.useJNI = useJNI;
     }
 
     public boolean isVerbose() {
