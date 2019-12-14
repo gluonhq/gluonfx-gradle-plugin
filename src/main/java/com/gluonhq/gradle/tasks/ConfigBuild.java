@@ -66,32 +66,23 @@ class ConfigBuild {
 
     void configClient() {
         clientConfig = new ProjectConfiguration((String) project.getProperties().get("mainClassName"));
-        if (clientExtension.getJavaStaticSdkVersion() != null) {
-            clientConfig.setJavaStaticSdkVersion(clientExtension.getJavaStaticSdkVersion());
-        }
+        clientConfig.setJavaStaticSdkVersion(clientExtension.getJavaStaticSdkVersion());
         clientConfig.setJavafxStaticSdkVersion(clientExtension.getJavafxStaticSdkVersion());
-
-        String osname = System.getProperty("os.name", "Mac OS X").toLowerCase(Locale.ROOT);
-        Triplet hostTriplet;
-        if (osname.contains("mac")) {
-            hostTriplet = new Triplet(Constants.Profile.MACOS);
-        } else if (osname.contains("nux")) {
-            hostTriplet = new Triplet(Constants.Profile.LINUX);
-        } else {
-            throw new RuntimeException("OS " + osname + " not supported");
-        }
 
         Triplet targetTriplet;
         String target = clientExtension.getTarget().toLowerCase(Locale.ROOT);
         switch (target) {
-            case Constants.TARGET_HOST:
-                targetTriplet = hostTriplet;
+            case Constants.PROFILE_HOST:
+                targetTriplet = Triplet.fromCurrentOS();
                 break;
-            case Constants.TARGET_IOS:
+            case Constants.PROFILE_IOS:
                 targetTriplet = new Triplet(Constants.Profile.IOS);
                 break;
-            case Constants.TARGET_IOS_SIM:
+            case Constants.PROFILE_IOS_SIM:
                 targetTriplet = new Triplet(Constants.Profile.IOS_SIM);
+                break;
+            case Constants.PROFILE_ANDROID:
+                targetTriplet = new Triplet(Constants.Profile.ANDROID);
                 break;
             default:
                 throw new RuntimeException("No valid target found for " + target);
