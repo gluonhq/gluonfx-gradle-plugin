@@ -41,7 +41,6 @@ import java.util.List;
 
 public class ClientExtension {
 
-    private static final String DEFAULT_JAVAFX_STATIC_SDK_VERSION = "14-ea+gvm1";
     private static final String DEFAULT_TARGET = "host";
 
     /**
@@ -107,7 +106,6 @@ public class ClientExtension {
     private IOSExtension iosExtension;
 
     public ClientExtension(Project project, ObjectFactory objectFactory) {
-        this.javafxStaticSdkVersion = DEFAULT_JAVAFX_STATIC_SDK_VERSION;
         this.target = DEFAULT_TARGET;
         this.bundlesList = new ArrayList<>();
         this.resourcesList = new ArrayList<>();
