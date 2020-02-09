@@ -31,23 +31,25 @@
  */
 package com.gluonhq.gradle.attach;
 
-import com.gluonhq.gradle.ClientExtension;
-import com.gluonhq.substrate.gluon.AttachResolver;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.inject.Inject;
+
 import org.gradle.api.Action;
 import org.gradle.api.NamedDomainObjectContainer;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 
-import javax.inject.Inject;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import com.gluonhq.gradle.ClientExtension;
 
 public class AttachConfiguration {
+	private static final String DEPENDENCY_GROUP = "com.gluonhq.attach";
+	private static final String UTIL_ARTIFACT = "util";
 
     private Project project;
-
-    private String version = "4.0.2";
+    private String version = "4.0.3";
     private String configuration = "implementation";
 
     private NamedDomainObjectContainer<AttachServiceDefinition> services;
@@ -107,7 +109,7 @@ public class AttachConfiguration {
     private void applyConfiguration() {
         if (lastAppliedConfiguration != null) {
             lastAppliedConfiguration.getDependencies()
-                    .removeIf(dependency -> AttachResolver.DEPENDENCY_GROUP.equals(dependency.getGroup()));
+                    .removeIf(dependency -> DEPENDENCY_GROUP.equals(dependency.getGroup()));
         }
 
         Configuration configuration = project.getConfigurations().getByName(getConfiguration());
@@ -119,8 +121,8 @@ public class AttachConfiguration {
                             .add(configuration.getName(), generateDependencyNotation(configuration, serviceDefinition, target)));
 
             Map<String, String> utilDependencyNotationMap = new HashMap<>();
-            utilDependencyNotationMap.put("group", AttachResolver.DEPENDENCY_GROUP);
-            utilDependencyNotationMap.put("name", AttachResolver.UTIL_ARTIFACT);
+            utilDependencyNotationMap.put("group", DEPENDENCY_GROUP);
+            utilDependencyNotationMap.put("name", UTIL_ARTIFACT);
             utilDependencyNotationMap.put("version", getVersion());
             project.getDependencies().add(configuration.getName(), utilDependencyNotationMap);
         }
@@ -130,7 +132,7 @@ public class AttachConfiguration {
 
     private Object generateDependencyNotation(Configuration configuration, AttachServiceDefinition pluginDefinition, String target) {
         Map<String, String> dependencyNotationMap = new HashMap<>();
-        dependencyNotationMap.put("group", AttachResolver.DEPENDENCY_GROUP);
+        dependencyNotationMap.put("group", DEPENDENCY_GROUP);
         dependencyNotationMap.put("name", getDependencyName(pluginDefinition));
         dependencyNotationMap.put("version", getDependencyVersion(pluginDefinition));
         dependencyNotationMap.put("classifier", getDependencyClassifier(pluginDefinition, target));
