@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2019, Gluon
+ * BSD 3-Clause License
+ *
+ * Copyright (c) 2019, Gluon Software
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,39 +29,66 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.gluonhq.gradle.tasks;
+package com.gluonhq.gradle.ios;
 
-import com.gluonhq.substrate.Constants;
-import com.gluonhq.substrate.SubstrateDispatcher;
 import org.gradle.api.Project;
-import org.gradle.api.tasks.TaskAction;
 
-import javax.inject.Inject;
-import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
-public class ClientNativeLink extends ClientNativeBase {
+public class IOSExtension {
 
-    @Inject
-    public ClientNativeLink(Project project) {
-        super(project);
+    private final Project project;
+
+    private List<String> frameworks = new ArrayList<>();
+    private List<String> frameworksPaths = new ArrayList<>();
+
+    private String signingIdentity;
+    private String provisioningProfile;
+
+    private String simulatorDevice;
+
+    public IOSExtension(Project project) {
+        this.project = project;
     }
 
-    @TaskAction
-    public void action() {
-        getProject().getLogger().info("ClientNativeLink action");
+    public List<String> getFrameworks() {
+        return frameworks;
+    }
 
-        ConfigBuild configBuild = new ConfigBuild(project);
-        configBuild.configClient();
+    public void setFrameworks(List<String> frameworks) {
+        this.frameworks = frameworks;
+    }
 
-        try {
-            Path clientPath = project.getLayout().getBuildDirectory().dir(Constants.CLIENT_PATH).get().getAsFile().toPath();
-            Path tmpPath = clientPath.resolve(Constants.GVM_PATH).resolve(Constants.TMP_PATH);
-            getProject().getLogger().debug("start linking at " + tmpPath.toString());
+    public List<String> getFrameworksPaths() {
+        return frameworksPaths;
+    }
 
-            SubstrateDispatcher dispatcher = new SubstrateDispatcher(clientPath, configBuild.getClientConfig());
-            dispatcher.nativeLink(configBuild.getClassPath());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public void setFrameworksPaths(List<String> frameworksPaths) {
+        this.frameworksPaths = frameworksPaths;
+    }
+
+    public String getSigningIdentity() {
+        return signingIdentity;
+    }
+
+    public void setSigningIdentity(String signingIdentity) {
+        this.signingIdentity = signingIdentity;
+    }
+
+    public String getProvisioningProfile() {
+        return provisioningProfile;
+    }
+
+    public void setProvisioningProfile(String provisioningProfile) {
+        this.provisioningProfile = provisioningProfile;
+    }
+
+    public String getSimulatorDevice() {
+        return simulatorDevice;
+    }
+
+    public void setSimulatorDevice(String simulatorDevice) {
+        this.simulatorDevice = simulatorDevice;
     }
 }
