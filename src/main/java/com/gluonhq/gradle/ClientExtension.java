@@ -108,9 +108,16 @@ public class ClientExtension {
      */
     private boolean verbose;
 
+    /**
+     * Enables software rendering.
+     * By default is false
+     */
+    private boolean enableSwRendering;
+
     private AttachConfiguration attachConfiguration;
 
     private IOSExtension iosExtension;
+
 
 
     public ClientExtension(Project project, ObjectFactory objectFactory) {
@@ -226,5 +233,9 @@ public class ClientExtension {
     public IOSExtension getIosExtension() {
         return iosExtension;
     }
+
+	public boolean isEnableSwRendering() {
+		return enableSwRendering;
+	}
 
 }

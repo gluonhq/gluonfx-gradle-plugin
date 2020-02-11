@@ -102,6 +102,7 @@ class ConfigBuild {
 
         clientConfig.setGraalPath(Path.of(getGraalHome().get()));
 
+        clientConfig.setUsePrismSW(clientExtension.isEnableSwRendering());
         clientConfig.setVerbose(clientExtension.isVerbose());
 
         IosSigningConfiguration iosConfiguration = new IosSigningConfiguration();
