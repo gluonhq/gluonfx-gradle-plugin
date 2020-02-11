@@ -93,6 +93,8 @@ public class AttachServiceDefinition implements Named {
             case Constants.TARGET_IOS:
             case Constants.TARGET_IOS_SIM:
                 return getService().isIosSupported() ? "ios" : "";
+            case Constants.PROFILE_ANDROID:
+                return getService().isAndroidSupported() ? "android" : "";
             default:
                 throw new RuntimeException("No valid target found for " + target);
         }
