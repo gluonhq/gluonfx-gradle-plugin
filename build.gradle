@@ -1,14 +1,14 @@
 plugins {
     id 'java-gradle-plugin'
     id 'com.github.hierynomus.license' version '0.15.0'
-    id 'com.gradle.plugin-publish' version '0.10.0'
-    id 'com.github.ben-manes.versions' version '0.20.0'
+    id 'com.gradle.plugin-publish' version '0.10.1'
+    id 'com.github.ben-manes.versions' version '0.27.0'
     id 'maven-publish'
     id 'eclipse'
 }
 
 group 'com.gluonhq'
-version '0.1.4-SNAPSHOT'
+version '0.1.15-SNAPSHOT'
 
 sourceCompatibility = 11
 targetCompatibility = 11
