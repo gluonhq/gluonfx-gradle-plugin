@@ -29,15 +29,17 @@
  */
 package com.gluonhq.gradle;
 
-import com.gluonhq.gradle.attach.AttachConfiguration;
-import com.gluonhq.gradle.ios.IOSExtension;
-import groovy.lang.Closure;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.gradle.api.Project;
 import org.gradle.api.model.ObjectFactory;
 import org.gradle.util.ConfigureUtil;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.gluonhq.gradle.attach.AttachConfiguration;
+import com.gluonhq.gradle.ios.IOSExtension;
+
+import groovy.lang.Closure;
 
 public class ClientExtension {
 
@@ -81,6 +83,11 @@ public class ClientExtension {
     private final List<String> jniList;
 
     /**
+     * List of optional compiler arguments
+     */
+    private final List<String> compilerArgs;
+
+    /**
      * The Java static SDK version
      */
     private String javaStaticSdkVersion;
@@ -105,12 +112,14 @@ public class ClientExtension {
 
     private IOSExtension iosExtension;
 
+
     public ClientExtension(Project project, ObjectFactory objectFactory) {
         this.target = DEFAULT_TARGET;
         this.bundlesList = new ArrayList<>();
         this.resourcesList = new ArrayList<>();
         this.reflectionList = new ArrayList<>();
         this.jniList = new ArrayList<>();
+        this.compilerArgs = new ArrayList<>();
 
         attachConfiguration = objectFactory.newInstance(AttachConfiguration.class, project);
 
@@ -183,6 +192,15 @@ public class ClientExtension {
 
     public List<String> getJniList() {
         return jniList;
+    }
+
+    public void setCompilerArgs(List<String> compilerArgs) {
+        this.compilerArgs.clear();
+        this.compilerArgs.addAll(compilerArgs);
+    }
+
+    public List<String> getCompilerArgs() {
+        return compilerArgs;
     }
 
     public boolean isVerbose() {

@@ -92,6 +92,7 @@ class ConfigBuild {
         clientConfig.setBundlesList(clientExtension.getBundlesList());
         clientConfig.setResourcesList(clientExtension.getResourcesList());
         clientConfig.setJniList(clientExtension.getJniList());
+        clientConfig.setCompilerArgs(clientExtension.getCompilerArgs());
         clientConfig.setReflectionList(clientExtension.getReflectionList());
 
         clientConfig.setAppName(project.getName());
