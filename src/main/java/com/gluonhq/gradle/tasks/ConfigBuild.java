@@ -43,6 +43,7 @@ import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
 import org.gradle.api.tasks.compile.JavaCompile;
+import org.gradle.internal.impldep.org.apache.maven.BuildFailureException;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -141,7 +142,10 @@ class ConfigBuild {
             project.getLogger().debug("BuildRoot: " + buildRootPath);
 
             SubstrateDispatcher dispatcher = new SubstrateDispatcher(buildRootPath, clientConfig);
-            dispatcher.nativeCompile(getClassPath());
+            boolean result = dispatcher.nativeCompile(getClassPath());
+            if (!result) {
+                throw new BuildFailureException("Compilation failed");
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
