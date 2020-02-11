@@ -57,7 +57,8 @@ public class ClientNativeLink extends ClientNativeBase {
             getProject().getLogger().debug("start linking at " + tmpPath.toString());
 
             SubstrateDispatcher dispatcher = new SubstrateDispatcher(clientPath, configBuild.getClientConfig());
-            dispatcher.nativeLink(configBuild.getClassPath());
+            boolean result = dispatcher.nativeLink(configBuild.getClassPath());
+            if (!result) throw new RuntimeException("Linking failed");
         } catch (Exception e) {
             e.printStackTrace();
         }
