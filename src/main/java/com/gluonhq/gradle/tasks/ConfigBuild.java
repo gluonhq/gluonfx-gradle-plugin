@@ -29,22 +29,6 @@
  */
 package com.gluonhq.gradle.tasks;
 
-import com.gluonhq.gradle.ClientExtension;
-import com.gluonhq.substrate.Constants;
-import com.gluonhq.substrate.ProjectConfiguration;
-import com.gluonhq.substrate.SubstrateDispatcher;
-import com.gluonhq.substrate.model.IosSigningConfiguration;
-import com.gluonhq.substrate.model.Triplet;
-import org.gradle.api.GradleException;
-import org.gradle.api.Project;
-import org.gradle.api.artifacts.DependencySet;
-import org.gradle.api.file.FileCollection;
-import org.gradle.api.plugins.JavaPlugin;
-import org.gradle.api.tasks.SourceSet;
-import org.gradle.api.tasks.SourceSetContainer;
-import org.gradle.api.tasks.compile.JavaCompile;
-import org.gradle.internal.impldep.org.apache.maven.BuildFailureException;
-
 import java.io.File;
 import java.nio.file.Path;
 import java.util.Collections;
@@ -52,6 +36,19 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import org.gradle.api.GradleException;
+import org.gradle.api.Project;
+import org.gradle.api.artifacts.DependencySet;
+import org.gradle.api.tasks.SourceSet;
+import org.gradle.api.tasks.SourceSetContainer;
+
+import com.gluonhq.gradle.ClientExtension;
+import com.gluonhq.substrate.Constants;
+import com.gluonhq.substrate.ProjectConfiguration;
+import com.gluonhq.substrate.SubstrateDispatcher;
+import com.gluonhq.substrate.model.IosSigningConfiguration;
+import com.gluonhq.substrate.model.Triplet;
 
 class ConfigBuild {
 
@@ -144,10 +141,10 @@ class ConfigBuild {
             SubstrateDispatcher dispatcher = new SubstrateDispatcher(buildRootPath, clientConfig);
             boolean result = dispatcher.nativeCompile(getClassPath());
             if (!result) {
-                throw new BuildFailureException("Compilation failed");
+                throw new IllegalStateException("Compilation failed");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new GradleException("Failed to compile", e);
         }
     }
 
