@@ -94,7 +94,7 @@ class ConfigBuild {
         clientConfig.setJniList(clientExtension.getJniList());
         clientConfig.setCompilerArgs(clientExtension.getCompilerArgs());
         clientConfig.setReflectionList(clientExtension.getReflectionList());
-
+        clientConfig.setAppId(project.getGroup() + "." + project.getName());
         clientConfig.setAppName(project.getName());
 
         clientConfig.setGraalPath(Path.of(getGraalHome().get()));
