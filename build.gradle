@@ -29,7 +29,8 @@ repositories {
 dependencies {
     implementation gradleApi()
 
-    implementation 'com.gluonhq:substrate:0.0.13'
+    testImplementation gradleTestKit()
+    implementation 'com.gluonhq:substrate:0.0.14-SNAPSHOT'
 }
 
 gradlePlugin {
