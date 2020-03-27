@@ -48,7 +48,7 @@ public class ClientNativeLink extends ClientNativeBase {
 
         boolean result;
         try {
-            SubstrateDispatcher dispatcher = new ConfigBuild(project).createSubstrateConfiguration();
+            SubstrateDispatcher dispatcher = new ConfigBuild(project).createSubstrateDispatcher();
             result = dispatcher.nativeLink();
         } catch (Exception e) {
         	throw new RuntimeException("Failed to link", e);

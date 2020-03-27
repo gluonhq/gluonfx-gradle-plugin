@@ -47,7 +47,7 @@ public class ClientNativeInstall extends ClientNativeBase {
         getProject().getLogger().info("ClientNativeInstall action");
 
         try {
-            SubstrateDispatcher dispatcher = new ConfigBuild(project).createSubstrateConfiguration();
+            SubstrateDispatcher dispatcher = new ConfigBuild(project).createSubstrateDispatcher();
             dispatcher.nativeInstall();
         } catch (Exception e) {
         	throw new RuntimeException("Failed to install", e);

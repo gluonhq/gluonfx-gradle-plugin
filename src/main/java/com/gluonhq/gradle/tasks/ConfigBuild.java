@@ -53,7 +53,6 @@ import com.gluonhq.substrate.model.Triplet;
 
 class ConfigBuild {
 
-    private ProjectConfiguration clientConfig;
     private final Project project;
     private final ClientExtension clientExtension;
 
@@ -63,15 +62,15 @@ class ConfigBuild {
         clientExtension = project.getExtensions().getByType(ClientExtension.class);
     }
 
-    public SubstrateDispatcher createSubstrateConfiguration() throws IOException {
+    public SubstrateDispatcher createSubstrateDispatcher() throws IOException {
         Path clientPath = project.getLayout().getBuildDirectory().dir(Constants.CLIENT_PATH).get().getAsFile().toPath();
         project.getLogger().debug(" in directory {}", clientPath);
 
-        return new SubstrateDispatcher(clientPath, getClientConfig());
+        return new SubstrateDispatcher(clientPath, createSubstrateConfiguration());
     }
 
-    private void configClient() {
-        clientConfig = new ProjectConfiguration((String) project.getProperties().get("mainClassName"), getClassPath());
+    private ProjectConfiguration createSubstrateConfiguration() {
+    	ProjectConfiguration clientConfig = new ProjectConfiguration((String) project.getProperties().get("mainClassName"), getClassPath());
         clientConfig.setJavaStaticSdkVersion(clientExtension.getJavaStaticSdkVersion());
         clientConfig.setJavafxStaticSdkVersion(clientExtension.getJavafxStaticSdkVersion());
 
@@ -117,15 +116,13 @@ class ConfigBuild {
         iosConfiguration.setSimulatorDevice(clientExtension.getIosExtension().getSimulatorDevice());
         // TODO: Allow frameworks
         clientConfig.setIosSigningConfiguration(iosConfiguration);
-    }
-
-    ProjectConfiguration getClientConfig() {
+        
         return clientConfig;
     }
 
     void build() {
-        configClient();
-
+    	ProjectConfiguration clientConfig = createSubstrateConfiguration();
+    	
         if (!getGraalHome().isPresent()) {
             throw new GradleException("GraalVM installation directory not found." +
                     " Either set GRAALVM_HOME as an environment variable or" +
@@ -158,7 +155,7 @@ class ConfigBuild {
         }
 }
 
-    String getClassPath() {
+    private String getClassPath() {
         List<Path> classPath = getClassPathFromSourceSets();
         project.getLogger().debug("Runtime classPath = " + classPath);
         String cp = classPath.stream()

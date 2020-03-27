@@ -47,7 +47,7 @@ public class ClientNativePackage extends ClientNativeBase {
         getProject().getLogger().info("ClientNativePackage action");
 
         try {
-            SubstrateDispatcher dispatcher = new ConfigBuild(project).createSubstrateConfiguration();
+            SubstrateDispatcher dispatcher = new ConfigBuild(project).createSubstrateDispatcher();
             dispatcher.nativePackage();
         } catch (Exception e) {
         	throw new RuntimeException("Failed to package", e);

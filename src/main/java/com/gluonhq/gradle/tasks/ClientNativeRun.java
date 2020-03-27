@@ -47,7 +47,7 @@ public class ClientNativeRun extends ClientNativeBase {
         getProject().getLogger().info("ClientNativeRun action");
 
         try {
-            SubstrateDispatcher dispatcher = new ConfigBuild(project).createSubstrateConfiguration();
+            SubstrateDispatcher dispatcher = new ConfigBuild(project).createSubstrateDispatcher();
             dispatcher.nativeRun();
         } catch (Exception e) {
             e.printStackTrace();
