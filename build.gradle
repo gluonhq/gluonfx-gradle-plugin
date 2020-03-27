@@ -30,7 +30,7 @@ dependencies {
     implementation gradleApi()
 
     testImplementation gradleTestKit()
-    implementation 'com.gluonhq:substrate:0.0.17-SNAPSHOT'
+    implementation 'com.gluonhq:substrate:0.0.16'
 }
 
 gradlePlugin {
@@ -77,4 +77,8 @@ license {
     mapping {
         java = 'SLASHSTAR_STYLE'
     }
+}
+
+tasks.eclipse.doFirst {
+	mkdir("build/pluginUnderTestMetadata")
 }

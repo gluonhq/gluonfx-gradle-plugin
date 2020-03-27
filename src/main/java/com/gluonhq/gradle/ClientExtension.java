@@ -218,7 +218,7 @@ public class ClientExtension {
         this.verbose = verbose;
     }
 
-    public void attachConfig(Closure configureClosure) {
+    public void attachConfig(Closure<?> configureClosure) {
         ConfigureUtil.configure(configureClosure, attachConfiguration);
     }
 

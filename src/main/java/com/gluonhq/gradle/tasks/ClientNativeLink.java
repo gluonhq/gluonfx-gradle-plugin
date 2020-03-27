@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Gluon
+ * Copyright (c) 2019, 2020, Gluon
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,16 +29,14 @@
  */
 package com.gluonhq.gradle.tasks;
 
-import com.gluonhq.substrate.Constants;
-import com.gluonhq.substrate.SubstrateDispatcher;
+import javax.inject.Inject;
+
 import org.gradle.api.Project;
 import org.gradle.api.tasks.TaskAction;
 
-import javax.inject.Inject;
-import java.nio.file.Path;
+import com.gluonhq.substrate.SubstrateDispatcher;
 
 public class ClientNativeLink extends ClientNativeBase {
-
     @Inject
     public ClientNativeLink(Project project) {
         super(project);
@@ -48,19 +46,16 @@ public class ClientNativeLink extends ClientNativeBase {
     public void action() {
         getProject().getLogger().info("ClientNativeLink action");
 
-        ConfigBuild configBuild = new ConfigBuild(project);
-        configBuild.configClient();
-
+        boolean result;
         try {
-            Path clientPath = project.getLayout().getBuildDirectory().dir(Constants.CLIENT_PATH).get().getAsFile().toPath();
-            Path tmpPath = clientPath.resolve(Constants.GVM_PATH).resolve(Constants.TMP_PATH);
-            getProject().getLogger().debug("start linking at " + tmpPath.toString());
-
-            SubstrateDispatcher dispatcher = new SubstrateDispatcher(clientPath, configBuild.getClientConfig());
-            boolean result = dispatcher.nativeLink(configBuild.getClassPath());
-            if (!result) throw new RuntimeException("Linking failed");
+            SubstrateDispatcher dispatcher = new ConfigBuild(project).createSubstrateConfiguration();
+            result = dispatcher.nativeLink();
         } catch (Exception e) {
-            e.printStackTrace();
+        	throw new RuntimeException("Failed to link", e);
+        }
+
+        if (!result) {
+        	throw new RuntimeException("Linking failed");
         }
     }
 }

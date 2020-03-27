@@ -36,21 +36,21 @@ import org.gradle.api.tasks.TaskAction;
 
 import com.gluonhq.substrate.SubstrateDispatcher;
 
-public class ClientNativeRun extends ClientNativeBase {
+public class ClientNativePackage extends ClientNativeBase {
     @Inject
-    public ClientNativeRun(Project project) {
+    public ClientNativePackage(Project project) {
         super(project);
     }
 
     @TaskAction
     public void action() {
-        getProject().getLogger().info("ClientNativeRun action");
+        getProject().getLogger().info("ClientNativePackage action");
 
         try {
             SubstrateDispatcher dispatcher = new ConfigBuild(project).createSubstrateConfiguration();
-            dispatcher.nativeRun();
+            dispatcher.nativePackage();
         } catch (Exception e) {
-            e.printStackTrace();
+        	throw new RuntimeException("Failed to package", e);
         }
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Gluon
+ * Copyright (c) 2019, 2020, Gluon
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,6 +30,7 @@
 package com.gluonhq.gradle.tasks;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
@@ -62,8 +63,15 @@ class ConfigBuild {
         clientExtension = project.getExtensions().getByType(ClientExtension.class);
     }
 
-    void configClient() {
-        clientConfig = new ProjectConfiguration((String) project.getProperties().get("mainClassName"));
+    public SubstrateDispatcher createSubstrateConfiguration() throws IOException {
+        Path clientPath = project.getLayout().getBuildDirectory().dir(Constants.CLIENT_PATH).get().getAsFile().toPath();
+        project.getLogger().debug(" in directory {}", clientPath);
+
+        return new SubstrateDispatcher(clientPath, getClientConfig());
+    }
+
+    private void configClient() {
+        clientConfig = new ProjectConfiguration((String) project.getProperties().get("mainClassName"), getClassPath());
         clientConfig.setJavaStaticSdkVersion(clientExtension.getJavaStaticSdkVersion());
         clientConfig.setJavafxStaticSdkVersion(clientExtension.getJavafxStaticSdkVersion());
 
@@ -124,6 +132,7 @@ class ConfigBuild {
                     " set graalvmHome in the client-plugin configuration");
         }
 
+        boolean result;
         try {
             String mainClassName = clientConfig.getMainClassName();
             String name = clientConfig.getAppName();
@@ -137,16 +146,17 @@ class ConfigBuild {
 
             Path buildRootPath = project.getLayout().getBuildDirectory().dir("client").get().getAsFile().toPath();
             project.getLogger().debug("BuildRoot: " + buildRootPath);
-
+            
             SubstrateDispatcher dispatcher = new SubstrateDispatcher(buildRootPath, clientConfig);
-            boolean result = dispatcher.nativeCompile(getClassPath());
-            if (!result) {
-                throw new IllegalStateException("Compilation failed");
-            }
+            result = dispatcher.nativeCompile();
         } catch (Exception e) {
             throw new GradleException("Failed to compile", e);
         }
-    }
+
+        if (!result) {
+            throw new IllegalStateException("Compilation failed");
+        }
+}
 
     String getClassPath() {
         List<Path> classPath = getClassPathFromSourceSets();
