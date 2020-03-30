@@ -33,7 +33,7 @@ dependencies {
     implementation gradleApi()
 
     testImplementation gradleTestKit()
-    implementation 'com.gluonhq:substrate:0.0.16'
+    implementation 'com.gluonhq:substrate:0.0.16-SNAPSHOT'
 }
 
 gradlePlugin {
