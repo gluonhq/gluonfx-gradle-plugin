@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2018, 2019, Gluon Software
+ * Copyright (c) 2018, 2019, 2020, Gluon Software
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,13 +43,14 @@ import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 
 import com.gluonhq.gradle.ClientExtension;
+import com.gluonhq.substrate.Constants;
 
 public class AttachConfiguration {
 	private static final String DEPENDENCY_GROUP = "com.gluonhq.attach";
 	private static final String UTIL_ARTIFACT = "util";
 
+	
     private Project project;
-    private String version = "4.0.3";
     private String configuration = "implementation";
 
     private NamedDomainObjectContainer<AttachServiceDefinition> services;
@@ -59,18 +60,6 @@ public class AttachConfiguration {
     public AttachConfiguration(Project project) {
         this.project = project;
         this.services = project.container(AttachServiceDefinition.class);
-    }
-
-    public void version(String version) {
-        this.version = version;
-    }
-
-    public String getVersion() {
-        return version;
-    }
-
-    public void setVersion(String version) {
-        this.version = version;
     }
 
     public void setConfiguration(String configuration) {
@@ -119,38 +108,29 @@ public class AttachConfiguration {
         if (services != null) {
             services.forEach(serviceDefinition -> project.getDependencies()
                             .add(configuration.getName(), generateDependencyNotation(configuration, serviceDefinition, target)));
-
-            Map<String, String> utilDependencyNotationMap = new HashMap<>();
-            utilDependencyNotationMap.put("group", DEPENDENCY_GROUP);
-            utilDependencyNotationMap.put("name", UTIL_ARTIFACT);
-            utilDependencyNotationMap.put("version", getVersion());
-            project.getDependencies().add(configuration.getName(), utilDependencyNotationMap);
         }
 
         lastAppliedConfiguration = configuration;
     }
 
     private Object generateDependencyNotation(Configuration configuration, AttachServiceDefinition pluginDefinition, String target) {
-        Map<String, String> dependencyNotationMap = new HashMap<>();
-        dependencyNotationMap.put("group", DEPENDENCY_GROUP);
-        dependencyNotationMap.put("name", getDependencyName(pluginDefinition));
-        dependencyNotationMap.put("version", getDependencyVersion(pluginDefinition));
-        dependencyNotationMap.put("classifier", getDependencyClassifier(pluginDefinition, target));
+    	String group = DEPENDENCY_GROUP;
+    	String artifact = pluginDefinition.getName();
+    	String version = pluginDefinition.getVersion();
+    	String classifier = pluginDefinition.getSupportedPlatform(target);
+    	
+    	Map<String, String> dependencyNotationMap = new HashMap<>();
+    	
+    	if (UTIL_ARTIFACT.equals(artifact) && Constants.PROFILE_ANDROID.equals(target)) {
+    		 classifier = target;
+    	}
+    	
+        dependencyNotationMap.put("group", group);
+        dependencyNotationMap.put("name", artifact);
+        dependencyNotationMap.put("version", version);
+        dependencyNotationMap.put("classifier", classifier);
 
-        project.getLogger().info("Adding dependency for {} in configuration {}: {}", pluginDefinition.getService().getServiceName(), configuration.getName(), dependencyNotationMap);
+        project.getLogger().lifecycle("Adding dependency for {} in configuration {}: {}", pluginDefinition.getService().getServiceName(), configuration.getName(), dependencyNotationMap);
         return dependencyNotationMap;
     }
-
-    private String getDependencyName(AttachServiceDefinition pluginDefinition) {
-        return pluginDefinition.getName();
-    }
-
-    private String getDependencyVersion(AttachServiceDefinition pluginDefinition) {
-        return pluginDefinition.getVersion() == null ? version : pluginDefinition.getVersion();
-    }
-
-    private String getDependencyClassifier(AttachServiceDefinition pluginDefinition, String target) {
-        return pluginDefinition.getSupportedPlatform(target);
-    }
-
 }
