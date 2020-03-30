@@ -146,7 +146,7 @@ public class AttachConfiguration {
         dependencyNotationMap.put("version", version);
         dependencyNotationMap.put("classifier", classifier);
 
-        project.getLogger().lifecycle("Adding dependency for {} in configuration {}: {}", pluginDefinition.getService().getServiceName(), configuration.getName(), dependencyNotationMap);
+        project.getLogger().info("Adding dependency for {} in configuration {}: {}", pluginDefinition.getService().getServiceName(), configuration.getName(), dependencyNotationMap);
         return dependencyNotationMap;
     }
 }
