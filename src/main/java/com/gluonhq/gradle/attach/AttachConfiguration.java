@@ -49,8 +49,9 @@ public class AttachConfiguration {
 	private static final String DEPENDENCY_GROUP = "com.gluonhq.attach";
 	private static final String UTIL_ARTIFACT = "util";
 
-	
     private Project project;
+
+    private String version;
     private String configuration = "implementation";
 
     private NamedDomainObjectContainer<AttachServiceDefinition> services;
@@ -60,6 +61,18 @@ public class AttachConfiguration {
     public AttachConfiguration(Project project) {
         this.project = project;
         this.services = project.container(AttachServiceDefinition.class);
+    }
+
+    public void version(String version) {
+        this.version = version;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
     }
 
     public void setConfiguration(String configuration) {
@@ -96,6 +109,10 @@ public class AttachConfiguration {
      * configuration will be included.
      */
     private void applyConfiguration() {
+    	if (version == null) {
+    		throw new IllegalStateException("Attach version must be specified!");
+    	}
+    	
         if (lastAppliedConfiguration != null) {
             lastAppliedConfiguration.getDependencies()
                     .removeIf(dependency -> DEPENDENCY_GROUP.equals(dependency.getGroup()));
@@ -116,7 +133,6 @@ public class AttachConfiguration {
     private Object generateDependencyNotation(Configuration configuration, AttachServiceDefinition pluginDefinition, String target) {
     	String group = DEPENDENCY_GROUP;
     	String artifact = pluginDefinition.getName();
-    	String version = pluginDefinition.getVersion();
     	String classifier = pluginDefinition.getSupportedPlatform(target);
     	
     	Map<String, String> dependencyNotationMap = new HashMap<>();
