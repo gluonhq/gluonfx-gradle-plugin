@@ -35,7 +35,7 @@ dependencies {
 
 gradlePlugin {
     plugins {
-        javafxPlugin {
+        clientPlugin {
             id = 'com.gluonhq.client-gradle-plugin'
             displayName = 'Gluon Client Plugin'
             description = 'Plugin that simplifies using Gluon Client for JavaFX projects'
