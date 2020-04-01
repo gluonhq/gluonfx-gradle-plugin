@@ -69,6 +69,35 @@ class ConfigBuild {
         return new SubstrateDispatcher(clientPath, createSubstrateConfiguration());
     }
 
+    public void build() {
+    	ProjectConfiguration clientConfig = createSubstrateConfiguration();
+
+        boolean result;
+        try {
+            String mainClassName = clientConfig.getMainClassName();
+            String name = clientConfig.getAppName();
+            for (org.gradle.api.artifacts.Configuration configuration : project.getBuildscript().getConfigurations()) {
+                project.getLogger().debug("Configuration = " + configuration);
+                DependencySet deps = configuration.getAllDependencies();
+                project.getLogger().debug("Dependencies = " + deps);
+                deps.forEach(dep -> project.getLogger().debug("Dependency = " + dep));
+            }
+            project.getLogger().debug("mainClassName = " + mainClassName + " and app name = " + name);
+
+            Path buildRootPath = project.getLayout().getBuildDirectory().dir("client").get().getAsFile().toPath();
+            project.getLogger().debug("BuildRoot: " + buildRootPath);
+            
+            SubstrateDispatcher dispatcher = new SubstrateDispatcher(buildRootPath, clientConfig);
+            result = dispatcher.nativeCompile();
+        } catch (Exception e) {
+            throw new GradleException("Failed to compile", e);
+        }
+
+        if (!result) {
+            throw new IllegalStateException("Compilation failed");
+        }
+    }
+
     private ProjectConfiguration createSubstrateConfiguration() {
     	ProjectConfiguration clientConfig = new ProjectConfiguration((String) project.getProperties().get("mainClassName"), getClassPath());
         clientConfig.setJavaStaticSdkVersion(clientExtension.getJavaStaticSdkVersion());
@@ -105,7 +134,7 @@ class ConfigBuild {
         clientConfig.setAppId(project.getGroup() + "." + project.getName());
         clientConfig.setAppName(project.getName());
 
-        clientConfig.setGraalPath(Path.of(getGraalHome().get()));
+        clientConfig.setGraalPath(getGraalHome());
 
         clientConfig.setUsePrismSW(clientExtension.isEnableSwRendering());
         clientConfig.setVerbose(clientExtension.isVerbose());
@@ -119,41 +148,6 @@ class ConfigBuild {
         
         return clientConfig;
     }
-
-    void build() {
-    	ProjectConfiguration clientConfig = createSubstrateConfiguration();
-    	
-        if (!getGraalHome().isPresent()) {
-            throw new GradleException("GraalVM installation directory not found." +
-                    " Either set GRAALVM_HOME as an environment variable or" +
-                    " set graalvmHome in the client-plugin configuration");
-        }
-
-        boolean result;
-        try {
-            String mainClassName = clientConfig.getMainClassName();
-            String name = clientConfig.getAppName();
-            for (org.gradle.api.artifacts.Configuration configuration : project.getBuildscript().getConfigurations()) {
-                project.getLogger().debug("Configuration = " + configuration);
-                DependencySet deps = configuration.getAllDependencies();
-                project.getLogger().debug("Dependencies = " + deps);
-                deps.forEach(dep -> project.getLogger().debug("Dependency = " + dep));
-            }
-            project.getLogger().debug("mainClassName = " + mainClassName + " and app name = " + name);
-
-            Path buildRootPath = project.getLayout().getBuildDirectory().dir("client").get().getAsFile().toPath();
-            project.getLogger().debug("BuildRoot: " + buildRootPath);
-            
-            SubstrateDispatcher dispatcher = new SubstrateDispatcher(buildRootPath, clientConfig);
-            result = dispatcher.nativeCompile();
-        } catch (Exception e) {
-            throw new GradleException("Failed to compile", e);
-        }
-
-        if (!result) {
-            throw new IllegalStateException("Compilation failed");
-        }
-}
 
     private String getClassPath() {
         List<Path> classPath = getClassPathFromSourceSets();
@@ -176,14 +170,16 @@ class ConfigBuild {
         return classPath;
     }
 
-    private Optional<String> getGraalHome() {
+    private Path getGraalHome() {
         String graalvmHome = clientExtension.getGraalvmHome();
-        if (graalvmHome != null) {
-            return Optional.of(graalvmHome);
-        } else if (System.getenv("GRAALVM_HOME") != null) {
-            return Optional.of(System.getenv("GRAALVM_HOME"));
+        if (graalvmHome == null) {
+        	graalvmHome = System.getenv("GRAALVM_HOME");
         }
-        return Optional.empty();
+        if (graalvmHome == null) {
+            throw new GradleException("GraalVM installation directory not found." +
+                    " Either set GRAALVM_HOME as an environment variable or" +
+                    " set graalvmHome in the client-plugin configuration");
+        }
+        return Path.of(graalvmHome);
     }
-
 }
