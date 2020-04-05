@@ -143,16 +143,11 @@ public class AttachConfiguration {
     }
 
     private Map<String, String> generateDependencyNotation(AttachServiceDefinition asd, String target) {
-    	String group = DEPENDENCY_GROUP;
-    	String artifact = asd.getName();
-    	String classifier = asd.getSupportedPlatform(target);
-    	
     	Map<String, String> dependencyNotationMap = new HashMap<>();
-    	
-        dependencyNotationMap.put("group", group);
-        dependencyNotationMap.put("name", artifact);
-        dependencyNotationMap.put("version", version);
-        dependencyNotationMap.put("classifier", classifier);
+        dependencyNotationMap.put("group", DEPENDENCY_GROUP);
+        dependencyNotationMap.put("name", asd.getName());
+        dependencyNotationMap.put("version", getVersion());
+        dependencyNotationMap.put("classifier", asd.getSupportedPlatform(target));
 
         project.getLogger().info("Adding dependency for {} in configuration {}: {}", asd.getService().getServiceName(), getConfiguration(), dependencyNotationMap);
         return dependencyNotationMap;
