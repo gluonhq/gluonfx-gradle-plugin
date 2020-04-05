@@ -118,35 +118,43 @@ public class AttachConfiguration {
                     .removeIf(dependency -> DEPENDENCY_GROUP.equals(dependency.getGroup()));
         }
 
-        Configuration configuration = project.getConfigurations().getByName(getConfiguration());
+        String configName = getConfiguration();
+        Configuration configuration = project.getConfigurations().getByName(configName);
         String target = project.getExtensions().getByType(ClientExtension.class).getTarget();
 
         project.getLogger().info("Adding Attach dependencies for target: " + target);
-        if (services != null) {
-            services.forEach(serviceDefinition -> project.getDependencies()
-                            .add(configuration.getName(), generateDependencyNotation(configuration, serviceDefinition, target)));
+        if (services != null && !services.isEmpty()) {
+            services.stream()
+                .map(asd -> generateDependencyNotation(asd, target))
+                .forEach(depNotion -> project.getDependencies().add(configName, depNotion));
+
+            // Also add util artifact if any other artifact added
+            Map<String, String> utilDependencyNotationMap = new HashMap<>();
+            utilDependencyNotationMap.put("group", DEPENDENCY_GROUP);
+            utilDependencyNotationMap.put("name", UTIL_ARTIFACT);
+            utilDependencyNotationMap.put("version", getVersion());
+            if (Constants.PROFILE_ANDROID.equals(target)) {
+                utilDependencyNotationMap.put("classifier", target);
+            }
+            project.getDependencies().add(configName, utilDependencyNotationMap);
         }
 
         lastAppliedConfiguration = configuration;
     }
 
-    private Object generateDependencyNotation(Configuration configuration, AttachServiceDefinition pluginDefinition, String target) {
+    private Map<String, String> generateDependencyNotation(AttachServiceDefinition asd, String target) {
     	String group = DEPENDENCY_GROUP;
-    	String artifact = pluginDefinition.getName();
-    	String classifier = pluginDefinition.getSupportedPlatform(target);
+    	String artifact = asd.getName();
+    	String classifier = asd.getSupportedPlatform(target);
     	
     	Map<String, String> dependencyNotationMap = new HashMap<>();
-    	
-    	if (UTIL_ARTIFACT.equals(artifact) && Constants.PROFILE_ANDROID.equals(target)) {
-    		 classifier = target;
-    	}
     	
         dependencyNotationMap.put("group", group);
         dependencyNotationMap.put("name", artifact);
         dependencyNotationMap.put("version", version);
         dependencyNotationMap.put("classifier", classifier);
 
-        project.getLogger().info("Adding dependency for {} in configuration {}: {}", pluginDefinition.getService().getServiceName(), configuration.getName(), dependencyNotationMap);
+        project.getLogger().info("Adding dependency for {} in configuration {}: {}", asd.getService().getServiceName(), getConfiguration(), dependencyNotationMap);
         return dependencyNotationMap;
     }
 }
