@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Gluon
+ * Copyright (c) 2019, 2020, Gluon
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,17 +29,14 @@
  */
 package com.gluonhq.gradle.tasks;
 
-import com.gluonhq.omega.Omega;
-import com.gluonhq.omega.util.Constants;
+import javax.inject.Inject;
+
 import org.gradle.api.Project;
 import org.gradle.api.tasks.TaskAction;
 
-import javax.inject.Inject;
-import java.io.File;
-import java.nio.file.Path;
+import com.gluonhq.substrate.SubstrateDispatcher;
 
 public class ClientNativeLink extends ClientNativeBase {
-
     @Inject
     public ClientNativeLink(Project project) {
         super(project);
@@ -49,17 +46,16 @@ public class ClientNativeLink extends ClientNativeBase {
     public void action() {
         getProject().getLogger().info("ClientNativeLink action");
 
-        ConfigBuild configBuild = new ConfigBuild(project);
-        configBuild.configClient();
-
+        boolean result;
         try {
-            File client = project.getLayout().getBuildDirectory().dir(Constants.CLIENT_PATH).get().getAsFile();
-            Path tmpPath = client.toPath().resolve(Constants.GVM_PATH).resolve(Constants.TMP_PATH);
-            getProject().getLogger().debug("start linking at " + tmpPath.toString());
-
-            Omega.nativeLink(client.getAbsolutePath(), configBuild.getClientConfig());
+            SubstrateDispatcher dispatcher = new ConfigBuild(project).createSubstrateDispatcher();
+            result = dispatcher.nativeLink();
         } catch (Exception e) {
-            e.printStackTrace();
+        	throw new RuntimeException("Failed to link", e);
+        }
+
+        if (!result) {
+        	throw new RuntimeException("Linking failed");
         }
     }
 }

@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2018, 2019, Gluon Software
+ * Copyright (c) 2018, 2019, 2020, Gluon Software
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,8 +31,7 @@
  */
 package com.gluonhq.gradle.attach;
 
-import com.gluonhq.omega.attach.AttachService;
-import com.gluonhq.omega.util.Constants;
+import com.gluonhq.substrate.Constants;
 import org.gradle.api.GradleException;
 import org.gradle.api.Named;
 import org.gradle.api.logging.LogLevel;
@@ -89,11 +88,13 @@ public class AttachServiceDefinition implements Named {
 
     String getSupportedPlatform(String target) {
         switch (target) {
-            case Constants.TARGET_HOST:
+            case Constants.PROFILE_HOST:
                 return getService().isDesktopSupported() ? "desktop" : "";
-            case Constants.TARGET_IOS:
-            case Constants.TARGET_IOS_SIM:
+            case Constants.PROFILE_IOS:
+            case Constants.PROFILE_IOS_SIM:
                 return getService().isIosSupported() ? "ios" : "";
+            case Constants.PROFILE_ANDROID:
+                return getService().isAndroidSupported() ? "android" : "";
             default:
                 throw new RuntimeException("No valid target found for " + target);
         }

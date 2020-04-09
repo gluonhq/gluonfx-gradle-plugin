@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Gluon
+ * Copyright (c) 2019, 2020, Gluon
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,20 +29,20 @@
  */
 package com.gluonhq.gradle;
 
-import com.gluonhq.gradle.attach.AttachConfiguration;
-import groovy.lang.Closure;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.gradle.api.Project;
 import org.gradle.api.model.ObjectFactory;
 import org.gradle.util.ConfigureUtil;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.gluonhq.gradle.attach.AttachConfiguration;
+import com.gluonhq.gradle.ios.IOSExtension;
+
+import groovy.lang.Closure;
 
 public class ClientExtension {
 
-    private static final String DEFAULT_GRAAL_LIBS_VERSION = "20.0.0-ea+17";
-    private static final String DEFAULT_JAVA_STATIC_SDK_VERSION = "11-ea+6";
-    private static final String DEFAULT_JAVAFX_STATIC_SDK_VERSION = "13-ea+7";
     private static final String DEFAULT_TARGET = "host";
 
     /**
@@ -52,13 +52,6 @@ public class ClientExtension {
      * Default is "host"
      */
     private String target;
-
-    /**
-     * Defines the intermediate representation.
-     * It can be set to LLVM or LIR.
-     * By default is not set and will be set based on the target platform
-     */
-    private String backend;
 
     /**
      * List of additional full qualified bundle resources that will be added to
@@ -90,22 +83,9 @@ public class ClientExtension {
     private final List<String> jniList;
 
     /**
-     * List of additional full qualified classes that will be added to the default
-     * delayed initialization list
+     * List of optional compiler arguments
      */
-    private final List<String> delayInitList;
-
-    /**
-     * List of additional JNI functions that will be added to the default
-     * release symbols list, that already includes most of the JNI methods.
-     */
-    private final List<String> releaseSymbolsList;
-
-    /**
-     * List of additional runtime arguments that could be required to run the
-     * application
-     */
-    private final List<String> runtimeArgsList;
+    private final List<String> compilerArgs;
 
     /**
      * The Java static SDK version
@@ -118,32 +98,9 @@ public class ClientExtension {
     private String javafxStaticSdkVersion;
 
     /**
-     * The Graal libs version
+     * The GraalVM Home directory
      */
-    private String graalLibsVersion;
-
-    /**
-     * The omega dependencies directory.
-     * By default it is set to $userHome/.gluon/omega/graalLibs/$version/bundle/lib)
-     */
-    private String graalLibsPath;
-
-    /**
-     * The path to the directory containing LLC tool.
-     */
-    private String llcPath;
-
-    /**
-     * Enables the use of JNI platform
-     * By default is true
-     */
-    private boolean useJNI;
-
-    /**
-     * Enables hash checking to verify integrity of Graal and Java/JavaFX files
-     * By default is true
-     */
-    private boolean enableCheckHash;
+    private String graalvmHome;
 
     /**
      * Enables verbose output
@@ -151,51 +108,37 @@ public class ClientExtension {
      */
     private boolean verbose;
 
+    /**
+     * Enables software rendering.
+     * By default is false
+     */
+    private boolean enableSwRendering;
+
     private AttachConfiguration attachConfiguration;
 
+    private IOSExtension iosExtension;
+
+
+
     public ClientExtension(Project project, ObjectFactory objectFactory) {
-        this.graalLibsVersion = DEFAULT_GRAAL_LIBS_VERSION;
-        this.javaStaticSdkVersion = DEFAULT_JAVA_STATIC_SDK_VERSION;
-        this.javafxStaticSdkVersion = DEFAULT_JAVAFX_STATIC_SDK_VERSION;
         this.target = DEFAULT_TARGET;
-        this.backend = "";
         this.bundlesList = new ArrayList<>();
         this.resourcesList = new ArrayList<>();
         this.reflectionList = new ArrayList<>();
         this.jniList = new ArrayList<>();
-        this.delayInitList = new ArrayList<>();
-        this.runtimeArgsList = new ArrayList<>();
-        this.releaseSymbolsList = new ArrayList<>();
-
-        this.useJNI = true;
-        this.enableCheckHash = true;
-        this.llcPath = "";
+        this.compilerArgs = new ArrayList<>();
 
         attachConfiguration = objectFactory.newInstance(AttachConfiguration.class, project);
+
+        iosExtension = project.getExtensions().create("ios", IOSExtension.class, project);
     }
 
-    public String getGraalLibsVersion() {
-        return graalLibsVersion;
+    public String getGraalvmHome() {
+        return graalvmHome;
     }
 
-    public void setGraalLibsVersion(String graalLibsVersion) {
-        this.graalLibsVersion = graalLibsVersion;
-    }
-
-    public String getGraalLibsPath() {
-        return graalLibsPath;
-    }
-
-    public String getLlcPath() {
-        return llcPath;
-    }
-
-    public void setLlcPath(String llcPath) {
-        this.llcPath = llcPath;
-    }
-
-    public void setGraalLibsPath(String graalLibsPath) {
-        this.graalLibsPath = graalLibsPath;
+    public void setGraalvmHome(String graalvmHome) {
+        this.graalvmHome = graalvmHome;
     }
 
     public String getJavaStaticSdkVersion() {
@@ -220,14 +163,6 @@ public class ClientExtension {
 
     public void setTarget(String target) {
         this.target = target;
-    }
-
-    public String getBackend() {
-        return backend;
-    }
-
-    public void setBackend(String backend) {
-        this.backend = backend;
     }
 
     public List<String> getBundlesList() {
@@ -266,48 +201,13 @@ public class ClientExtension {
         return jniList;
     }
 
-
-    public List<String> getDelayInitList() {
-        return delayInitList;
+    public void setCompilerArgs(List<String> compilerArgs) {
+        this.compilerArgs.clear();
+        this.compilerArgs.addAll(compilerArgs);
     }
 
-    public void setDelayInitList(List<String> delayInitList) {
-        this.delayInitList.clear();
-        this.delayInitList.addAll(delayInitList);
-    }
-
-    public List<String> getRuntimeArgsList() {
-        return runtimeArgsList;
-    }
-
-    public void setRuntimeArgsList(List<String> runtimeArgsList) {
-        this.runtimeArgsList.clear();
-        this.runtimeArgsList.addAll(runtimeArgsList);
-    }
-
-    public List<String> getReleaseSymbolsList() {
-        return releaseSymbolsList;
-    }
-
-    public void setReleaseSymbolsList(List<String> releaseSymbolsList) {
-        this.releaseSymbolsList.clear();
-        this.releaseSymbolsList.addAll(releaseSymbolsList);
-    }
-
-    public boolean isEnableCheckHash() {
-        return enableCheckHash;
-    }
-
-    public void setEnableCheckHash(boolean enableCheckHash) {
-        this.enableCheckHash = enableCheckHash;
-    }
-
-    public boolean isUseJNI() {
-        return useJNI;
-    }
-
-    public void setUseJNI(boolean useJNI) {
-        this.useJNI = useJNI;
+    public List<String> getCompilerArgs() {
+        return compilerArgs;
     }
 
     public boolean isVerbose() {
@@ -318,11 +218,24 @@ public class ClientExtension {
         this.verbose = verbose;
     }
 
-    public void attachConfig(Closure configureClosure) {
+    public void attachConfig(Closure<?> configureClosure) {
         ConfigureUtil.configure(configureClosure, attachConfiguration);
     }
 
     public AttachConfiguration getAttachConfig() {
         return attachConfiguration;
     }
+
+    public void setIosExtension(IOSExtension iosExtension) {
+        this.iosExtension = iosExtension;
+    }
+
+    public IOSExtension getIosExtension() {
+        return iosExtension;
+    }
+
+	public boolean isEnableSwRendering() {
+		return enableSwRendering;
+	}
+
 }

@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 2019, 2020, Gluon
+ * BSD 3-Clause License
+ *
+ * Copyright (c) 2019, Gluon Software
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,30 +29,66 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.gluonhq.gradle.tasks;
-
-import javax.inject.Inject;
+package com.gluonhq.gradle.ios;
 
 import org.gradle.api.Project;
-import org.gradle.api.tasks.TaskAction;
 
-import com.gluonhq.substrate.SubstrateDispatcher;
+import java.util.ArrayList;
+import java.util.List;
 
-public class ClientNativeRun extends ClientNativeBase {
-    @Inject
-    public ClientNativeRun(Project project) {
-        super(project);
+public class IOSExtension {
+
+    private final Project project;
+
+    private List<String> frameworks = new ArrayList<>();
+    private List<String> frameworksPaths = new ArrayList<>();
+
+    private String signingIdentity;
+    private String provisioningProfile;
+
+    private String simulatorDevice;
+
+    public IOSExtension(Project project) {
+        this.project = project;
     }
 
-    @TaskAction
-    public void action() {
-        getProject().getLogger().info("ClientNativeRun action");
+    public List<String> getFrameworks() {
+        return frameworks;
+    }
 
-        try {
-            SubstrateDispatcher dispatcher = new ConfigBuild(project).createSubstrateDispatcher();
-            dispatcher.nativeRun();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public void setFrameworks(List<String> frameworks) {
+        this.frameworks = frameworks;
+    }
+
+    public List<String> getFrameworksPaths() {
+        return frameworksPaths;
+    }
+
+    public void setFrameworksPaths(List<String> frameworksPaths) {
+        this.frameworksPaths = frameworksPaths;
+    }
+
+    public String getSigningIdentity() {
+        return signingIdentity;
+    }
+
+    public void setSigningIdentity(String signingIdentity) {
+        this.signingIdentity = signingIdentity;
+    }
+
+    public String getProvisioningProfile() {
+        return provisioningProfile;
+    }
+
+    public void setProvisioningProfile(String provisioningProfile) {
+        this.provisioningProfile = provisioningProfile;
+    }
+
+    public String getSimulatorDevice() {
+        return simulatorDevice;
+    }
+
+    public void setSimulatorDevice(String simulatorDevice) {
+        this.simulatorDevice = simulatorDevice;
     }
 }

@@ -18,7 +18,7 @@ Using the `plugins` DSL, add:
 
 
     plugins {
-        id 'com.gluonhq.client-gradle-plugin' version '0.0.11'
+        id 'com.gluonhq.client-gradle-plugin' version '0.0.20'
     }
     
 This requires adding the plugin repository to the `settings.gradle` file:
@@ -45,7 +45,7 @@ Alternatively, you can use the `buildscript` DSL:
             }
         }
         dependencies {
-            classpath 'com.gluonhq:client-gradle-plugin:0.0.11'
+            classpath 'com.gluonhq:client-gradle-plugin:0.0.20'
         }
     }
     apply plugin: 'com.gluonhq.client-gradle-plugin'
@@ -83,7 +83,7 @@ The results will be available at `$buildDir/client/$hostPlatform/$AppName`.
 #### `nativeBuild`
 
 This task simply combines `nativeCompile` and `nativeLink`.
-    
+
 #### `nativeRun`
 
 Runs the executable in the target platform
@@ -101,6 +101,27 @@ Or run directly the application from command line:
     build/client/$hostPlatform/$AppName/$AppName    
     
 It will create a distributable native application.
+
+#### `nativePackage`
+
+Create a package of the executable in the target platform
+
+Run:
+
+	./gradlew nativePackage
+
+For instance, on iOS, this can be used to create an IPA
+
+
+#### `nativeInstall`
+
+Installs the generated package that was created after `nativePackage`.
+
+Run:
+
+	./gradlew nativeInstall
+
+
 
 ### 3. Specify plugin extensions
 
