@@ -7,7 +7,7 @@ plugins {
 }
 
 group 'com.gluonhq'
-version '0.1.20'
+version '0.1.21-SNAPSHOT'
 
 sourceCompatibility = 11
 targetCompatibility = 11
