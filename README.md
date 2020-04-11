@@ -23,7 +23,7 @@ Using the `plugins` DSL, add:
 
 
     plugins {
-        id 'com.gluonhq.client-gradle-plugin' version '0.1.20-SNAPSHOT'
+        id 'com.gluonhq.client-gradle-plugin' version '0.1.20'
     }
     
 This requires adding the plugin repository to the `settings.gradle` file:
@@ -32,9 +32,6 @@ This requires adding the plugin repository to the `settings.gradle` file:
         repositories {
             maven {
                 url "https://nexus.gluonhq.com/nexus/content/repositories/releases"
-            }
-	    maven {
-                url "https://nexus.gluonhq.com/nexus/content/repositories/public-snapshots"
             }
             
             gradlePluginPortal()
@@ -61,6 +58,7 @@ Alternatively, you can use the `buildscript` DSL:
         }
     }
     apply plugin: 'com.gluonhq.client-gradle-plugin'
+    
 
 ### 2. Tasks
 
@@ -137,35 +135,51 @@ Run:
 
 #### Mac OS X and iOS
 
-* Download this version of Graal VM: https://download2.gluonhq.com/substrate/graalvm/graalvm-svm-darwin-20.1.0-ea+26.zip and unpack it like you would any other JDK. (e.g. in `/opt`)
+* Download this version of Graal VM: https://download2.gluonhq.com/substrate/graalvm/graalvm-svm-darwin-20.1.0-ea+27.zip and unpack it like you would any other JDK. (e.g. in `/opt`)
 
 * Configure the runtime environment. Set `GRAALVM_HOME` environment variable to the GraalVM installation directory.
 
 For example:
 
-    export GRAALVM_HOME=/opt/graalvm-svm-darwin-20.1.0-ea+26
+    export GRAALVM_HOME=/opt/graalvm-svm-darwin-20.1.0-ea+27
 
 * Set `JAVA_HOME` to point to the GraalVM installation directory
 
 For example:
 
     export JAVA_HOME=$GRAALVM_HOME
+
+To deploy to iOS, set the target:
+
+```
+gluonClient {
+     target = "ios"
+ }
+```
 
 #### Linux and Android
 
-* Download this version of Graal VM: https://download2.gluonhq.com/substrate/graalvm/graalvm-svm-linux-20.1.0-ea+26.zip and unpack it like you would any other JDK. (e.g. in `/opt`)
+* Download this version of Graal VM: https://download2.gluonhq.com/substrate/graalvm/graalvm-svm-linux-20.1.0-ea+27.zip and unpack it like you would any other JDK. (e.g. in `/opt`)
 
 * Configure the runtime environment. Set `GRAALVM_HOME` environment variable to the GraalVM installation directory.
 
 For example:
 
-    export GRAALVM_HOME=/opt/graalvm-svm-linux-20.1.0-ea+26
+    export GRAALVM_HOME=/opt/graalvm-svm-linux-20.1.0-ea+27
 
 * Set `JAVA_HOME` to point to the GraalVM installation directory
 
 For example:
 
     export JAVA_HOME=$GRAALVM_HOME
+
+To deploy to Android, set the target:
+
+```
+gluonClient {
+     target = "android"
+ }
+```
 
 Check the [documentation](https://docs.gluonhq.com/client) for more details about the plugin and running the [gradle samples](https://github.com/gluonhq/client-samples/tree/master/Gradle).
 
