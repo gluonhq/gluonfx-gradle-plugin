@@ -31,6 +31,7 @@ package com.gluonhq.gradle.tasks;
 
 import javax.inject.Inject;
 
+import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 import org.gradle.api.tasks.TaskAction;
 
@@ -46,11 +47,16 @@ public class ClientNativeInstall extends ClientNativeBase {
     public void action() {
         getProject().getLogger().info("ClientNativeInstall action");
 
+        boolean result;
         try {
             SubstrateDispatcher dispatcher = new ConfigBuild(project).createSubstrateDispatcher();
-            dispatcher.nativeInstall();
+            result = dispatcher.nativeInstall();
         } catch (Exception e) {
-        	throw new RuntimeException("Failed to install", e);
+        	throw new GradleException("Failed to install", e);
+        }
+        
+        if (!result) {
+            throw new GradleException("Installing failed");
         }
     }
 }

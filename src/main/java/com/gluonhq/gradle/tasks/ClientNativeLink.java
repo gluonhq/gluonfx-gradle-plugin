@@ -31,6 +31,7 @@ package com.gluonhq.gradle.tasks;
 
 import javax.inject.Inject;
 
+import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 import org.gradle.api.tasks.TaskAction;
 
@@ -51,11 +52,11 @@ public class ClientNativeLink extends ClientNativeBase {
             SubstrateDispatcher dispatcher = new ConfigBuild(project).createSubstrateDispatcher();
             result = dispatcher.nativeLink();
         } catch (Exception e) {
-        	throw new RuntimeException("Failed to link", e);
+        	throw new GradleException("Failed to link", e);
         }
 
         if (!result) {
-        	throw new RuntimeException("Linking failed");
+        	throw new GradleException("Linking failed");
         }
     }
 }
