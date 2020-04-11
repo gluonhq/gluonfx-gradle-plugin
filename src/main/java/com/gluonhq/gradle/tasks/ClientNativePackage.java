@@ -31,6 +31,7 @@ package com.gluonhq.gradle.tasks;
 
 import javax.inject.Inject;
 
+import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 import org.gradle.api.tasks.TaskAction;
 
@@ -46,11 +47,16 @@ public class ClientNativePackage extends ClientNativeBase {
     public void action() {
         getProject().getLogger().info("ClientNativePackage action");
 
+        boolean result;
         try {
             SubstrateDispatcher dispatcher = new ConfigBuild(project).createSubstrateDispatcher();
-            dispatcher.nativePackage();
+            result = dispatcher.nativePackage();
         } catch (Exception e) {
-        	throw new RuntimeException("Failed to package", e);
+        	throw new GradleException("Failed to package", e);
+        }
+        
+        if (!result) {
+            throw new GradleException("Packaging failed");
         }
     }
 }
