@@ -149,7 +149,7 @@ For example:
 
     export JAVA_HOME=$GRAALVM_HOME
 
-To deploy to iOS, set the target:
+By default `target` is set to `host`. To deploy to iOS, set the target:
 
 ```
 gluonClient {
@@ -173,7 +173,7 @@ For example:
 
     export JAVA_HOME=$GRAALVM_HOME
 
-To deploy to Android, set the target:
+By default `target` is set to `host`. To deploy to Android, set the target:
 
 ```
 gluonClient {
