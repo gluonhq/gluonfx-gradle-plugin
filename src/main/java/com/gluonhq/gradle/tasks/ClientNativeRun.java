@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Gluon
+ * Copyright (c) 2019, 2020, Gluon
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,17 +29,14 @@
  */
 package com.gluonhq.gradle.tasks;
 
-import com.gluonhq.omega.Omega;
-import com.gluonhq.omega.util.Constants;
+import javax.inject.Inject;
+
 import org.gradle.api.Project;
 import org.gradle.api.tasks.TaskAction;
 
-import javax.inject.Inject;
-import java.nio.file.Path;
+import com.gluonhq.substrate.SubstrateDispatcher;
 
 public class ClientNativeRun extends ClientNativeBase {
-
-
     @Inject
     public ClientNativeRun(Project project) {
         super(project);
@@ -49,14 +46,9 @@ public class ClientNativeRun extends ClientNativeBase {
     public void action() {
         getProject().getLogger().info("ClientNativeRun action");
 
-        ConfigBuild configBuild = new ConfigBuild(project);
-        configBuild.configClient();
-
         try {
-            Path client = project.getLayout().getBuildDirectory().dir(Constants.CLIENT_PATH).get().getAsFile().toPath();
-            getProject().getLogger().debug("start running at " + client.toString());
-
-            Omega.nativeRun(client.toString(), configBuild.getClientConfig());
+            SubstrateDispatcher dispatcher = new ConfigBuild(project).createSubstrateDispatcher();
+            dispatcher.nativeRun();
         } catch (Exception e) {
             e.printStackTrace();
         }

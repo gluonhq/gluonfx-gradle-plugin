@@ -37,26 +37,26 @@ import org.gradle.api.tasks.TaskAction;
 
 import com.gluonhq.substrate.SubstrateDispatcher;
 
-public class ClientNativeLink extends ClientNativeBase {
+public class ClientNativeInstall extends ClientNativeBase {
     @Inject
-    public ClientNativeLink(Project project) {
+    public ClientNativeInstall(Project project) {
         super(project);
     }
 
     @TaskAction
     public void action() {
-        getProject().getLogger().info("ClientNativeLink action");
+        getProject().getLogger().info("ClientNativeInstall action");
 
         boolean result;
         try {
             SubstrateDispatcher dispatcher = new ConfigBuild(project).createSubstrateDispatcher();
-            result = dispatcher.nativeLink();
+            result = dispatcher.nativeInstall();
         } catch (Exception e) {
-        	throw new GradleException("Failed to link", e);
+        	throw new GradleException("Failed to install", e);
         }
-
+        
         if (!result) {
-        	throw new GradleException("Linking failed");
+            throw new GradleException("Installing failed");
         }
     }
 }

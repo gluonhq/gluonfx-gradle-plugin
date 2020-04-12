@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Gluon
+ * Copyright (c) 2019, 2020, Gluon
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,30 +29,29 @@
  */
 package com.gluonhq.gradle.tasks;
 
-import com.gluonhq.gradle.ClientExtension;
-import com.gluonhq.omega.Configuration;
-import com.gluonhq.omega.IOSConfiguration;
-import com.gluonhq.omega.Omega;
-import com.gluonhq.omega.model.TargetTriplet;
-import com.gluonhq.omega.util.Constants;
-import org.gradle.api.Project;
-import org.gradle.api.artifacts.DependencySet;
-import org.gradle.api.file.FileCollection;
-import org.gradle.api.plugins.JavaPlugin;
-import org.gradle.api.tasks.SourceSet;
-import org.gradle.api.tasks.SourceSetContainer;
-import org.gradle.api.tasks.compile.JavaCompile;
-
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
+import org.gradle.api.GradleException;
+import org.gradle.api.Project;
+import org.gradle.api.artifacts.DependencySet;
+import org.gradle.api.tasks.SourceSet;
+import org.gradle.api.tasks.SourceSetContainer;
+
+import com.gluonhq.gradle.ClientExtension;
+import com.gluonhq.substrate.Constants;
+import com.gluonhq.substrate.ProjectConfiguration;
+import com.gluonhq.substrate.SubstrateDispatcher;
+import com.gluonhq.substrate.model.IosSigningConfiguration;
+import com.gluonhq.substrate.model.Triplet;
+
 class ConfigBuild {
 
-    private Configuration clientConfig;
     private final Project project;
     private final ClientExtension clientExtension;
 
@@ -62,82 +61,17 @@ class ConfigBuild {
         clientExtension = project.getExtensions().getByType(ClientExtension.class);
     }
 
-    void configClient() {
-        clientConfig = new Configuration();
-        clientConfig.setGraalLibsVersion(clientExtension.getGraalLibsVersion());
-        clientConfig.setJavaStaticSdkVersion(clientExtension.getJavaStaticSdkVersion());
-        clientConfig.setJavafxStaticSdkVersion(clientExtension.getJavafxStaticSdkVersion());
+    public SubstrateDispatcher createSubstrateDispatcher() throws IOException {
+        Path clientPath = project.getLayout().getBuildDirectory().dir(Constants.CLIENT_PATH).get().getAsFile().toPath();
+        project.getLogger().debug(" in directory {}", clientPath);
 
-        String osname = System.getProperty("os.name", "Mac OS X").toLowerCase(Locale.ROOT);
-        TargetTriplet hostTriplet;
-        if (osname.contains("mac")) {
-            hostTriplet = new TargetTriplet(Constants.AMD64_ARCH, Constants.HOST_MAC, Constants.TARGET_MAC);
-        } else if (osname.contains("nux")) {
-            hostTriplet = new TargetTriplet(Constants.AMD64_ARCH, Constants.HOST_LINUX, Constants.TARGET_LINUX);
-        } else {
-            throw new RuntimeException("OS " + osname + " not supported");
-        }
-        clientConfig.setHost(hostTriplet);
-
-        TargetTriplet targetTriplet = null;
-        String target = clientExtension.getTarget().toLowerCase(Locale.ROOT);
-        switch (target) {
-            case Constants.TARGET_HOST:
-                if (osname.contains("mac")) {
-                    targetTriplet = new TargetTriplet(Constants.AMD64_ARCH, Constants.HOST_MAC, Constants.TARGET_MAC);
-                } else if (osname.contains("nux")) {
-                    targetTriplet = new TargetTriplet(Constants.AMD64_ARCH, Constants.HOST_LINUX, Constants.TARGET_LINUX);
-                }
-                break;
-            case Constants.TARGET_IOS:
-                targetTriplet = new TargetTriplet(Constants.ARM64_ARCH, Constants.HOST_MAC, Constants.TARGET_IOS);
-                break;
-            case Constants.TARGET_IOS_SIM:
-                targetTriplet = new TargetTriplet(Constants.AMD64_ARCH, Constants.HOST_MAC, Constants.TARGET_IOS);
-                break;
-            default:
-                throw new RuntimeException("No valid target found for " + target);
-        }
-        clientConfig.setTarget(targetTriplet);
-
-        clientConfig.setBackend(clientExtension.getBackend().toLowerCase(Locale.ROOT));
-        clientConfig.setBundlesList(clientExtension.getBundlesList());
-        clientConfig.setResourcesList(clientExtension.getResourcesList());
-        clientConfig.setDelayInitList(clientExtension.getDelayInitList());
-        clientConfig.setJniList(clientExtension.getJniList());
-        clientConfig.setReflectionList(clientExtension.getReflectionList());
-        clientConfig.setRuntimeArgsList(clientExtension.getRuntimeArgsList());
-        clientConfig.setReleaseSymbolsList(clientExtension.getReleaseSymbolsList());
-
-        clientConfig.setMainClassName((String) project.getProperties().get("mainClassName"));
-        clientConfig.setAppName(project.getName());
-
-        List<Path> classPath = getClassPathFromSourceSets();
-        clientConfig.setUseJavaFX(classPath.stream().anyMatch(f -> f.getFileName().toString().contains("javafx")));
-        clientConfig.setGraalLibsUserPath(clientExtension.getGraalLibsPath());
-
-        clientConfig.setLlcPath(clientExtension.getLlcPath());
-        clientConfig.setEnableCheckHash(clientExtension.isEnableCheckHash());
-        clientConfig.setUseJNI(clientExtension.isUseJNI());
-        clientConfig.setVerbose(clientExtension.isVerbose());
-
-        IOSConfiguration iosConfiguration = new IOSConfiguration();
-        iosConfiguration.setProvidedSigningIdentity(clientExtension.getIosExtension().getSigningIdentity());
-        iosConfiguration.setProvidedProvisioningProfile(clientExtension.getIosExtension().getProvisioningProfile());
-        iosConfiguration.setSimulatorDevice(clientExtension.getIosExtension().getSimulatorDevice());
-        iosConfiguration.setFrameworks(clientExtension.getIosExtension().getFrameworks());
-        iosConfiguration.setFrameworksPaths(clientExtension.getIosExtension().getFrameworksPaths());
-        clientConfig.setIosConfiguration(iosConfiguration);
+        return new SubstrateDispatcher(clientPath, createSubstrateConfiguration());
     }
 
-    Configuration getClientConfig() {
-        return clientConfig;
-    }
+    public void build() {
+    	ProjectConfiguration clientConfig = createSubstrateConfiguration();
 
-    void build() {
-
-        configClient();
-
+        boolean result;
         try {
             String mainClassName = clientConfig.getMainClassName();
             String name = clientConfig.getAppName();
@@ -148,28 +82,79 @@ class ConfigBuild {
                 deps.forEach(dep -> project.getLogger().debug("Dependency = " + dep));
             }
             project.getLogger().debug("mainClassName = " + mainClassName + " and app name = " + name);
-            JavaCompile compileTask = (JavaCompile) project.getTasks().findByName(JavaPlugin.COMPILE_JAVA_TASK_NAME);
-            FileCollection classpath = compileTask.getClasspath();
-            project.getLogger().debug("Compile classPath = " + classpath.getFiles());
-            project.getLogger().debug("Java Class Path = " + System.getProperty("java.class.path"));
 
-            List<Path> classPath = getClassPathFromSourceSets();
-            project.getLogger().debug("Runtime classPath = " + classPath);
-
-            String cp0 = classPath.stream()
-                    .map(Path::toString)
-                    .collect(Collectors.joining(File.pathSeparator));
-
-            String buildRoot = project.getLayout().getBuildDirectory().dir("client").get().getAsFile().getAbsolutePath();
-            project.getLogger().debug("BuildRoot: " + buildRoot);
-
-            String cp = cp0 + File.pathSeparator;
-            project.getLogger().debug("CP: " + cp);
-
-            Omega.nativeCompile(buildRoot, clientConfig, cp);
+            Path buildRootPath = project.getLayout().getBuildDirectory().dir("client").get().getAsFile().toPath();
+            project.getLogger().debug("BuildRoot: " + buildRootPath);
+            
+            SubstrateDispatcher dispatcher = new SubstrateDispatcher(buildRootPath, clientConfig);
+            result = dispatcher.nativeCompile();
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new GradleException("Failed to compile", e);
         }
+
+        if (!result) {
+            throw new IllegalStateException("Compilation failed");
+        }
+    }
+
+    private ProjectConfiguration createSubstrateConfiguration() {
+    	ProjectConfiguration clientConfig = new ProjectConfiguration((String) project.getProperties().get("mainClassName"), getClassPath());
+        clientConfig.setJavaStaticSdkVersion(clientExtension.getJavaStaticSdkVersion());
+        clientConfig.setJavafxStaticSdkVersion(clientExtension.getJavafxStaticSdkVersion());
+
+        Triplet targetTriplet;
+        String target = clientExtension.getTarget().toLowerCase(Locale.ROOT);
+        switch (target) {
+            case Constants.PROFILE_HOST:
+                targetTriplet = Triplet.fromCurrentOS();
+                break;
+            case Constants.PROFILE_IOS:
+                targetTriplet = new Triplet(Constants.Profile.IOS);
+                break;
+            case Constants.PROFILE_IOS_SIM:
+                targetTriplet = new Triplet(Constants.Profile.IOS_SIM);
+                break;
+            case Constants.PROFILE_ANDROID:
+                targetTriplet = new Triplet(Constants.Profile.ANDROID);
+                break;
+            case Constants.PROFILE_LINUX_AARCH64:
+                targetTriplet = new Triplet(Constants.Profile.LINUX_AARCH64);
+                break;
+            default:
+                throw new RuntimeException("No valid target found for " + target);
+        }
+        clientConfig.setTarget(targetTriplet);
+
+        clientConfig.setBundlesList(clientExtension.getBundlesList());
+        clientConfig.setResourcesList(clientExtension.getResourcesList());
+        clientConfig.setJniList(clientExtension.getJniList());
+        clientConfig.setCompilerArgs(clientExtension.getCompilerArgs());
+        clientConfig.setReflectionList(clientExtension.getReflectionList());
+        clientConfig.setAppId(project.getGroup() + "." + project.getName());
+        clientConfig.setAppName(project.getName());
+
+        clientConfig.setGraalPath(getGraalHome());
+
+        clientConfig.setUsePrismSW(clientExtension.isEnableSwRendering());
+        clientConfig.setVerbose(clientExtension.isVerbose());
+
+        IosSigningConfiguration iosConfiguration = new IosSigningConfiguration();
+        iosConfiguration.setProvidedSigningIdentity(clientExtension.getIosExtension().getSigningIdentity());
+        iosConfiguration.setProvidedProvisioningProfile(clientExtension.getIosExtension().getProvisioningProfile());
+        iosConfiguration.setSimulatorDevice(clientExtension.getIosExtension().getSimulatorDevice());
+        // TODO: Allow frameworks
+        clientConfig.setIosSigningConfiguration(iosConfiguration);
+        
+        return clientConfig;
+    }
+
+    private String getClassPath() {
+        List<Path> classPath = getClassPathFromSourceSets();
+        project.getLogger().debug("Runtime classPath = " + classPath);
+        String cp = classPath.stream()
+                .map(Path::toString)
+                .collect(Collectors.joining(File.pathSeparator)) + File.pathSeparator;
+        return cp;
     }
 
     private List<Path> getClassPathFromSourceSets() {
@@ -184,4 +169,16 @@ class ConfigBuild {
         return classPath;
     }
 
+    private Path getGraalHome() {
+        String graalvmHome = clientExtension.getGraalvmHome();
+        if (graalvmHome == null) {
+        	graalvmHome = System.getenv("GRAALVM_HOME");
+        }
+        if (graalvmHome == null) {
+            throw new GradleException("GraalVM installation directory not found." +
+                    " Either set GRAALVM_HOME as an environment variable or" +
+                    " set graalvmHome in the client-plugin configuration");
+        }
+        return Path.of(graalvmHome);
+    }
 }

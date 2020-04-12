@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2018, 2019, Gluon Software
+ * Copyright (c) 2018, 2019, 2020, Gluon Software
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,23 +31,27 @@
  */
 package com.gluonhq.gradle.attach;
 
-import com.gluonhq.gradle.ClientExtension;
-import com.gluonhq.omega.attach.AttachResolver;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.inject.Inject;
+
 import org.gradle.api.Action;
 import org.gradle.api.NamedDomainObjectContainer;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 
-import javax.inject.Inject;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import com.gluonhq.gradle.ClientExtension;
+import com.gluonhq.substrate.Constants;
 
 public class AttachConfiguration {
+	private static final String DEPENDENCY_GROUP = "com.gluonhq.attach";
+	private static final String UTIL_ARTIFACT = "util";
 
     private Project project;
 
-    private String version = "4.0.2";
+    private String version;
     private String configuration = "implementation";
 
     private NamedDomainObjectContainer<AttachServiceDefinition> services;
@@ -105,50 +109,47 @@ public class AttachConfiguration {
      * configuration will be included.
      */
     private void applyConfiguration() {
+    	if (version == null) {
+    		throw new IllegalStateException("Attach version must be specified!");
+    	}
+    	
         if (lastAppliedConfiguration != null) {
             lastAppliedConfiguration.getDependencies()
-                    .removeIf(dependency -> AttachResolver.DEPENDENCY_GROUP.equals(dependency.getGroup()));
+                    .removeIf(dependency -> DEPENDENCY_GROUP.equals(dependency.getGroup()));
         }
 
-        Configuration configuration = project.getConfigurations().getByName(getConfiguration());
+        String configName = getConfiguration();
+        Configuration configuration = project.getConfigurations().getByName(configName);
         String target = project.getExtensions().getByType(ClientExtension.class).getTarget();
 
         project.getLogger().info("Adding Attach dependencies for target: " + target);
-        if (services != null) {
-            services.forEach(serviceDefinition -> project.getDependencies()
-                            .add(configuration.getName(), generateDependencyNotation(configuration, serviceDefinition, target)));
+        if (services != null && !services.isEmpty()) {
+            services.stream()
+                .map(asd -> generateDependencyNotation(asd, target))
+                .forEach(depNotion -> project.getDependencies().add(configName, depNotion));
 
+            // Also add util artifact if any other artifact added
             Map<String, String> utilDependencyNotationMap = new HashMap<>();
-            utilDependencyNotationMap.put("group", AttachResolver.DEPENDENCY_GROUP);
-            utilDependencyNotationMap.put("name", AttachResolver.UTIL_ARTIFACT);
+            utilDependencyNotationMap.put("group", DEPENDENCY_GROUP);
+            utilDependencyNotationMap.put("name", UTIL_ARTIFACT);
             utilDependencyNotationMap.put("version", getVersion());
-            project.getDependencies().add(configuration.getName(), utilDependencyNotationMap);
+            if (Constants.PROFILE_ANDROID.equals(target)) {
+                utilDependencyNotationMap.put("classifier", target);
+            }
+            project.getDependencies().add(configName, utilDependencyNotationMap);
         }
 
         lastAppliedConfiguration = configuration;
     }
 
-    private Object generateDependencyNotation(Configuration configuration, AttachServiceDefinition pluginDefinition, String target) {
-        Map<String, String> dependencyNotationMap = new HashMap<>();
-        dependencyNotationMap.put("group", AttachResolver.DEPENDENCY_GROUP);
-        dependencyNotationMap.put("name", getDependencyName(pluginDefinition));
-        dependencyNotationMap.put("version", getDependencyVersion(pluginDefinition));
-        dependencyNotationMap.put("classifier", getDependencyClassifier(pluginDefinition, target));
+    private Map<String, String> generateDependencyNotation(AttachServiceDefinition asd, String target) {
+    	Map<String, String> dependencyNotationMap = new HashMap<>();
+        dependencyNotationMap.put("group", DEPENDENCY_GROUP);
+        dependencyNotationMap.put("name", asd.getName());
+        dependencyNotationMap.put("version", getVersion());
+        dependencyNotationMap.put("classifier", asd.getSupportedPlatform(target));
 
-        project.getLogger().info("Adding dependency for {} in configuration {}: {}", pluginDefinition.getService().getServiceName(), configuration.getName(), dependencyNotationMap);
+        project.getLogger().info("Adding dependency for {} in configuration {}: {}", asd.getService().getServiceName(), getConfiguration(), dependencyNotationMap);
         return dependencyNotationMap;
     }
-
-    private String getDependencyName(AttachServiceDefinition pluginDefinition) {
-        return pluginDefinition.getName();
-    }
-
-    private String getDependencyVersion(AttachServiceDefinition pluginDefinition) {
-        return pluginDefinition.getVersion() == null ? version : pluginDefinition.getVersion();
-    }
-
-    private String getDependencyClassifier(AttachServiceDefinition pluginDefinition, String target) {
-        return pluginDefinition.getSupportedPlatform(target);
-    }
-
 }
