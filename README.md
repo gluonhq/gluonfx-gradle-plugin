@@ -47,9 +47,6 @@ Alternatively, you can use the `buildscript` DSL:
                 url "https://nexus.gluonhq.com/nexus/content/repositories/releases"
             }
             maven {
-                url "https://nexus.gluonhq.com/nexus/content/repositories/public-snapshots"
-            }
-            maven {
                 url "https://plugins.gradle.org/m2/"
             }
         }
