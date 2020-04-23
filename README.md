@@ -132,13 +132,13 @@ Run:
 
 #### Mac OS X and iOS
 
-* Download this version of Graal VM: https://download2.gluonhq.com/substrate/graalvm/graalvm-svm-darwin-20.1.0-ea+27.zip and unpack it like you would any other JDK. (e.g. in `/opt`)
+* Download this version of Graal VM: https://download2.gluonhq.com/substrate/graalvm/graalvm-svm-darwin-20.1.0-ea+28.zip and unpack it like you would any other JDK. (e.g. in `/opt`)
 
 * Configure the runtime environment. Set `GRAALVM_HOME` environment variable to the GraalVM installation directory.
 
 For example:
 
-    export GRAALVM_HOME=/opt/graalvm-svm-darwin-20.1.0-ea+27
+    export GRAALVM_HOME=/opt/graalvm-svm-darwin-20.1.0-ea+28
 
 * Set `JAVA_HOME` to point to the GraalVM installation directory
 
@@ -156,13 +156,13 @@ gluonClient {
 
 #### Linux and Android
 
-* Download this version of Graal VM: https://download2.gluonhq.com/substrate/graalvm/graalvm-svm-linux-20.1.0-ea+27.zip and unpack it like you would any other JDK. (e.g. in `/opt`)
+* Download this version of Graal VM: https://download2.gluonhq.com/substrate/graalvm/graalvm-svm-linux-20.1.0-ea+28.zip and unpack it like you would any other JDK. (e.g. in `/opt`)
 
 * Configure the runtime environment. Set `GRAALVM_HOME` environment variable to the GraalVM installation directory.
 
 For example:
 
-    export GRAALVM_HOME=/opt/graalvm-svm-linux-20.1.0-ea+27
+    export GRAALVM_HOME=/opt/graalvm-svm-linux-20.1.0-ea+28
 
 * Set `JAVA_HOME` to point to the GraalVM installation directory
 
@@ -178,12 +178,10 @@ gluonClient {
  }
 ```
 
-Check the [documentation](https://docs.gluonhq.com/client) for more details about the plugin and running the [gradle samples](https://github.com/gluonhq/client-samples/tree/master/Gradle).
-
 ## Issues and Contributions ##
 
-Issues can be reported to the [Issue tracker](https://github.com/gluonhq/client-samples/issues)
+Issues can be reported to the [Issue tracker](https://github.com/gluonhq/client-gradle-plugin/issues)
 
-Contributions can be submitted via [Pull requests](https://github.com/gluonhq/client-samples/pulls), 
+Contributions can be submitted via [Pull requests](https://github.com/gluonhq//client-gradle-plugin/pulls), 
 providing you have signed the [Gluon Individual Contributor License Agreement (CLA)](https://docs.google.com/forms/d/16aoFTmzs8lZTfiyrEm8YgMqMYaGQl0J8wA0VJE2LCCY) 
 (See [What is a CLA and why do I care](https://www.clahub.com/pages/why_cla) in case of doubt).
