@@ -6,6 +6,11 @@
 # Update version by 1
 newVersion=${TRAVIS_TAG%.*}.$((${TRAVIS_TAG##*.} + 1))
 
+# Update README with the latest released version
+sed -i "0,/id 'com.gluonhq.client-gradle-plugin' version '.*'/s//id 'com.gluonhq.client-gradle-plugin' version '$TRAVIS_TAG'/" README.md
+sed -i "0,/'com.gluonhq:client-gradle-plugin:.*'/s//'com.gluonhq:client-gradle-plugin:$TRAVIS_TAG'/" README.md
+git commit README.md -m "Use latest release v$TRAVIS_TAG in README"
+
 # Replace first occurrence of 
 # version 'TRAVIS_TAG' 
 # with 
