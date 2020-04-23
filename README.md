@@ -54,7 +54,7 @@ Alternatively, you can use the `buildscript` DSL:
             }
         }
         dependencies {
-            classpath 'com.gluonhq:client-gradle-plugin:0.1.20-SNAPSHOT'
+            classpath 'com.gluonhq:client-gradle-plugin:0.1.20'
         }
     }
     apply plugin: 'com.gluonhq.client-gradle-plugin'
