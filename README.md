@@ -7,6 +7,11 @@ so it can directly be executed as a native application on the target platform.
 [![Travis CI](https://api.travis-ci.org/gluonhq/client-gradle-plugin.svg?branch=master)](https://travis-ci.org/gluonhq/client-gradle-plugin)
 [![BSD-3 license](https://img.shields.io/badge/license-BSD--3-%230778B9.svg)](https://opensource.org/licenses/BSD-3-Clause)
 
+# Important Notice
+
+Gluon releases the [Client plugin for Maven](https://github.com/gluonhq/client-maven-plugin), and this plugin is maintained and kept up to date by the community.
+
+Use at your own risk.
 
 ## Getting started
 
@@ -18,7 +23,7 @@ Using the `plugins` DSL, add:
 
 
     plugins {
-        id 'com.gluonhq.client-gradle-plugin' version '0.0.20'
+        id 'com.gluonhq.client-gradle-plugin' version '0.1.20'
     }
     
 This requires adding the plugin repository to the `settings.gradle` file:
@@ -28,6 +33,7 @@ This requires adding the plugin repository to the `settings.gradle` file:
             maven {
                 url "https://nexus.gluonhq.com/nexus/content/repositories/releases"
             }
+            
             gradlePluginPortal()
         }
     }
@@ -45,10 +51,11 @@ Alternatively, you can use the `buildscript` DSL:
             }
         }
         dependencies {
-            classpath 'com.gluonhq:client-gradle-plugin:0.0.20'
+            classpath 'com.gluonhq:client-gradle-plugin:0.1.20'
         }
     }
     apply plugin: 'com.gluonhq.client-gradle-plugin'
+    
 
 ### 2. Tasks
 
@@ -104,63 +111,77 @@ It will create a distributable native application.
 
 #### `nativePackage`
 
-Create a package of the executable in the target platform
+On mobile only, create a package of the executable in the target platform
 
 Run:
 
 	./gradlew nativePackage
 
-For instance, on iOS, this can be used to create an IPA
+On iOS, this can be used to create an IPA, on Android it will create an APK.
 
 
 #### `nativeInstall`
 
-Installs the generated package that was created after `nativePackage`.
+On mobile only, installs the generated package that was created after `nativePackage`.
 
 Run:
 
 	./gradlew nativeInstall
-
-
-
-### 3. Specify plugin extensions
-
-Only if you need to, you can modify the default settings, by specifying
- the required extensions that the project uses in your `build.gradle` file:
-
-    gluonClient {
-        target = "host"
-        graalLibsVersion = "20.0.0-ea+12"
-        graalLibsPath = ""
-        javaStaticSdkVersion = "11-ea+6"
-        javafxStaticSdkVersion = "13-ea+7"
-        bundlesList = []
-        resourcesList = []
-        reflectionList = []
-        jniList = []
-        delayInitList = []
-        releaseSymbolsList = []
-        verbose = false
-        attachConfig {
-            version = "4.0.2"
-            services ''
-            configuration = "implementation"
-        }
-    }
     
 ### Requirements
 
-At this moment the plugin is in beta, and supports Linux, Mac OS X and iOS platforms for now.
+#### Mac OS X and iOS
 
-To use the plugin to develop and deploy native applications on Mac or iOS platforms, you need a Mac with MacOS X 10.13.2 or superior, and Xcode 9.2 or superior, available from the Mac App Store. Once Xcode is downloaded and installed, open it and accept the license terms.
+* Download this version of Graal VM: https://download2.gluonhq.com/substrate/graalvm/graalvm-svm-darwin-20.1.0-ea+28.zip and unpack it like you would any other JDK. (e.g. in `/opt`)
 
-For now, only JDK 11 is supported. Any JDK 11 distribution that doesn't bundle JavaFX is valid, like:
+* Configure the runtime environment. Set `GRAALVM_HOME` environment variable to the GraalVM installation directory.
 
-- [OpenJDK 11.0.2](https://download.java.net/java/GA/jdk11/9/GPL/openjdk-11.0.2_osx-x64_bin.tar.gz)
+For example:
 
-- [AdoptOpenJDK 11.0.3](https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.3%2B7/OpenJDK11U-jdk_x64_mac_hotspot_11.0.3_7.tar.gz)
+    export GRAALVM_HOME=/opt/graalvm-svm-darwin-20.1.0-ea+28
 
-Once downloaded and installed, set `JAVA_HOME` pointing to that JDK 11.
+* Set `JAVA_HOME` to point to the GraalVM installation directory
 
-Check the [documentation](https://docs.gluonhq.com/client) for more details about the plugin and running the [gradle samples](https://github.com/gluonhq/client-samples/tree/master/Gradle).
+For example:
 
+    export JAVA_HOME=$GRAALVM_HOME
+
+By default `target` is set to `host`. To deploy to iOS, set the target:
+
+```
+gluonClient {
+     target = "ios"
+ }
+```
+
+#### Linux and Android
+
+* Download this version of Graal VM: https://download2.gluonhq.com/substrate/graalvm/graalvm-svm-linux-20.1.0-ea+28.zip and unpack it like you would any other JDK. (e.g. in `/opt`)
+
+* Configure the runtime environment. Set `GRAALVM_HOME` environment variable to the GraalVM installation directory.
+
+For example:
+
+    export GRAALVM_HOME=/opt/graalvm-svm-linux-20.1.0-ea+28
+
+* Set `JAVA_HOME` to point to the GraalVM installation directory
+
+For example:
+
+    export JAVA_HOME=$GRAALVM_HOME
+
+By default `target` is set to `host`. To deploy to Android, set the target:
+
+```
+gluonClient {
+     target = "android"
+ }
+```
+
+## Issues and Contributions ##
+
+Issues can be reported to the [Issue tracker](https://github.com/gluonhq/client-gradle-plugin/issues)
+
+Contributions can be submitted via [Pull requests](https://github.com/gluonhq/client-gradle-plugin/pulls), 
+providing you have signed the [Gluon Individual Contributor License Agreement (CLA)](https://docs.google.com/forms/d/16aoFTmzs8lZTfiyrEm8YgMqMYaGQl0J8wA0VJE2LCCY) 
+(See [What is a CLA and why do I care](https://www.clahub.com/pages/why_cla) in case of doubt).
