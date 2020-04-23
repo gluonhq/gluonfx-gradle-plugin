@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+# Configure GIT
+git config --global user.name "Gluon Bot"
+git config --global user.email "githubbot@gluonhq.com"
+
 # Release artifacts
 ./gradlew publish -PgluonNexusUsername=$NEXUS_USERNAME -PgluonNexusPassword=$NEXUS_PASSWORD -PrepositoryUrl=https://nexus.gluonhq.com/nexus/content/repositories/releases
 
@@ -24,5 +28,5 @@ newSubstrateVersion=${substrateVersion%.*}.$((${substrateVersion##*.} + 1))
 # Update Substrate version
 sed -i -z "0,/com.gluonhq:substrate:$substrateVersion/s//com.gluonhq:substrate:$newSubstrateVersion-SNAPSHOT/" build.gradle
 
-git commit build.gradle -m "Upgrade version to $newVersion-SNAPSHOT" --author "Github Bot <githubbot@gluonhq.com>"
-git push https://gluon-bot:$GITHUB_PASSWORD@github.com/gluonhq/client-gradle-plugin HEAD:master
+git commit build.gradle -m "Upgrade version to $newVersion-SNAPSHOT"
+git push https://gluon-bot:$GITHUB_PASSWORD@github.com/$TRAVIS_REPO_SLUG HEAD:master
