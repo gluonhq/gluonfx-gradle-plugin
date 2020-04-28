@@ -28,5 +28,5 @@ newSubstrateVersion=${substrateVersion%.*}.$((${substrateVersion##*.} + 1))
 # Update Substrate version
 sed -i -z "0,/com.gluonhq:substrate:$substrateVersion/s//com.gluonhq:substrate:$newSubstrateVersion-SNAPSHOT/" build.gradle
 
-git commit build.gradle -m "Upgrade version to $newVersion-SNAPSHOT"
+git commit build.gradle -m "Prepare development of $newVersion"
 git push https://gluon-bot:$GITHUB_PASSWORD@github.com/$TRAVIS_REPO_SLUG HEAD:master
