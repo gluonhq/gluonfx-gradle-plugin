@@ -37,7 +37,6 @@ import org.gradle.api.model.ObjectFactory;
 import org.gradle.util.ConfigureUtil;
 
 import com.gluonhq.gradle.attach.AttachConfiguration;
-import com.gluonhq.gradle.ios.IOSExtension;
 
 import groovy.lang.Closure;
 
@@ -115,10 +114,7 @@ public class ClientExtension {
     private boolean enableSwRendering;
 
     private AttachConfiguration attachConfiguration;
-
-    private IOSExtension iosExtension;
-
-
+    private ReleaseConfiguration releaseConfiguration;
 
     public ClientExtension(Project project, ObjectFactory objectFactory) {
         this.target = DEFAULT_TARGET;
@@ -129,8 +125,7 @@ public class ClientExtension {
         this.compilerArgs = new ArrayList<>();
 
         attachConfiguration = objectFactory.newInstance(AttachConfiguration.class, project);
-
-        iosExtension = project.getExtensions().create("ios", IOSExtension.class, project);
+        releaseConfiguration = objectFactory.newInstance(ReleaseConfiguration.class, project);
     }
 
     public String getGraalvmHome() {
@@ -218,6 +213,10 @@ public class ClientExtension {
         this.verbose = verbose;
     }
 
+    public boolean isEnableSwRendering() {
+        return enableSwRendering;
+    }
+
     public void attachConfig(Closure<?> configureClosure) {
         ConfigureUtil.configure(configureClosure, attachConfiguration);
     }
@@ -226,16 +225,12 @@ public class ClientExtension {
         return attachConfiguration;
     }
 
-    public void setIosExtension(IOSExtension iosExtension) {
-        this.iosExtension = iosExtension;
+    public void release(Closure<?> configureClosure) {
+        ConfigureUtil.configure(configureClosure, releaseConfiguration);
     }
 
-    public IOSExtension getIosExtension() {
-        return iosExtension;
+	public ReleaseConfiguration getReleaseConfiguration() {
+        return releaseConfiguration;
     }
-
-	public boolean isEnableSwRendering() {
-		return enableSwRendering;
-	}
 
 }
