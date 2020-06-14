@@ -217,6 +217,10 @@ public class ClientExtension {
         return enableSwRendering;
     }
 
+    public void setEnableSwRendering(boolean enableSwRendering) {
+        this.enableSwRendering = enableSwRendering;
+    }
+
     public void attachConfig(Closure<?> configureClosure) {
         ConfigureUtil.configure(configureClosure, attachConfiguration);
     }
