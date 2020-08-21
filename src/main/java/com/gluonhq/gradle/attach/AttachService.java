@@ -38,6 +38,7 @@ import java.util.Locale;
  */
 public enum AttachService {
     ACCELEROMETER,
+    AUDIO,
     AUDIO_RECORDING(true /* desktopSupported */),
     AUGMENTED_REALITY,
     BARCODE_SCAN,
