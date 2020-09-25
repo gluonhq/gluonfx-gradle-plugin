@@ -47,7 +47,6 @@ import com.gluonhq.gradle.ClientExtension;
 import com.gluonhq.substrate.Constants;
 import com.gluonhq.substrate.ProjectConfiguration;
 import com.gluonhq.substrate.SubstrateDispatcher;
-import com.gluonhq.substrate.model.IosSigningConfiguration;
 import com.gluonhq.substrate.model.Triplet;
 
 class ConfigBuild {
@@ -138,13 +137,8 @@ class ConfigBuild {
         clientConfig.setUsePrismSW(clientExtension.isEnableSwRendering());
         clientConfig.setVerbose(clientExtension.isVerbose());
 
-        IosSigningConfiguration iosConfiguration = new IosSigningConfiguration();
-        iosConfiguration.setProvidedSigningIdentity(clientExtension.getIosExtension().getSigningIdentity());
-        iosConfiguration.setProvidedProvisioningProfile(clientExtension.getIosExtension().getProvisioningProfile());
-        iosConfiguration.setSimulatorDevice(clientExtension.getIosExtension().getSimulatorDevice());
-        // TODO: Allow frameworks
-        clientConfig.setIosSigningConfiguration(iosConfiguration);
-        
+        clientConfig.setReleaseConfiguration(clientExtension.getReleaseConfiguration().toSubstrate());
+
         return clientConfig;
     }
 
