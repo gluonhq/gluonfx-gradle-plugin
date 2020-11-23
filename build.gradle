@@ -7,7 +7,7 @@ plugins {
 }
 
 group 'com.gluonhq'
-version '0.1.35'
+version '0.1.36-SNAPSHOT'
 
 sourceCompatibility = 11
 targetCompatibility = 11
@@ -32,7 +32,7 @@ dependencies {
     implementation gradleApi()
 
     testImplementation gradleTestKit()
-    implementation 'com.gluonhq:substrate:0.0.33'
+    implementation 'com.gluonhq:substrate:0.0.34-SNAPSHOT'
 }
 
 gradlePlugin {
