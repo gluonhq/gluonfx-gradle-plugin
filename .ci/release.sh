@@ -30,3 +30,6 @@ sed -i -z "0,/com.gluonhq:substrate:$substrateVersion/s//com.gluonhq:substrate:$
 
 git commit build.gradle -m "Prepare development of $newVersion"
 git push https://gluon-bot:$GITHUB_PASSWORD@github.com/$TRAVIS_REPO_SLUG HEAD:master
+
+# Update ide-plugin properties
+bash .ci/update-ide-properties.sh "$TRAVIS_TAG"
