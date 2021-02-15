@@ -23,7 +23,7 @@ Using the `plugins` DSL, add:
 
 
     plugins {
-        id 'com.gluonhq.client-gradle-plugin' version '0.1.32'
+        id 'com.gluonhq.client-gradle-plugin' version '0.1.36'
     }
     
 This requires adding the plugin repository to the `settings.gradle` file:
@@ -51,7 +51,7 @@ Alternatively, you can use the `buildscript` DSL:
             }
         }
         dependencies {
-            classpath 'com.gluonhq:client-gradle-plugin:0.1.32'
+            classpath 'com.gluonhq:client-gradle-plugin:0.1.36'
         }
     }
     apply plugin: 'com.gluonhq.client-gradle-plugin'
@@ -130,53 +130,7 @@ Run:
     
 ### Requirements
 
-#### Mac OS X and iOS
-
-* Download this version of Graal VM: https://download2.gluonhq.com/substrate/graalvm/graalvm-svm-darwin-20.1.0-ea+28.zip and unpack it like you would any other JDK. (e.g. in `/opt`)
-
-* Configure the runtime environment. Set `GRAALVM_HOME` environment variable to the GraalVM installation directory.
-
-For example:
-
-    export GRAALVM_HOME=/opt/graalvm-svm-darwin-20.1.0-ea+28
-
-* Set `JAVA_HOME` to point to the GraalVM installation directory
-
-For example:
-
-    export JAVA_HOME=$GRAALVM_HOME
-
-By default `target` is set to `host`. To deploy to iOS, set the target:
-
-```
-gluonClient {
-     target = "ios"
- }
-```
-
-#### Linux and Android
-
-* Download this version of Graal VM: https://download2.gluonhq.com/substrate/graalvm/graalvm-svm-linux-20.1.0-ea+28.zip and unpack it like you would any other JDK. (e.g. in `/opt`)
-
-* Configure the runtime environment. Set `GRAALVM_HOME` environment variable to the GraalVM installation directory.
-
-For example:
-
-    export GRAALVM_HOME=/opt/graalvm-svm-linux-20.1.0-ea+28
-
-* Set `JAVA_HOME` to point to the GraalVM installation directory
-
-For example:
-
-    export JAVA_HOME=$GRAALVM_HOME
-
-By default `target` is set to `host`. To deploy to Android, set the target:
-
-```
-gluonClient {
-     target = "android"
- }
-```
+Check the requirements for the [target platform](https://docs.gluonhq.com/#_platforms) before you get started.
 
 ## Issues and Contributions ##
 

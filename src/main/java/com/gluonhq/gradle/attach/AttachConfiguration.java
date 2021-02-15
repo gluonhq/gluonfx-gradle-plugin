@@ -133,7 +133,8 @@ public class AttachConfiguration {
             utilDependencyNotationMap.put("group", DEPENDENCY_GROUP);
             utilDependencyNotationMap.put("name", UTIL_ARTIFACT);
             utilDependencyNotationMap.put("version", getVersion());
-            if (Constants.PROFILE_ANDROID.equals(target)) {
+            if (Constants.PROFILE_ANDROID.equals(target) || Constants.PROFILE_IOS.equals(target)
+                    || Constants.PROFILE_IOS_SIM.equals(target)) {
                 utilDependencyNotationMap.put("classifier", target);
             }
             project.getDependencies().add(configName, utilDependencyNotationMap);
