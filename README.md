@@ -64,7 +64,7 @@ You can run the regular tasks to build and run your project as a regular VM proj
     ./gradlew clean build
     ./gradlew run
     
-Once the project is ready, the plugin has these three main tasks:    
+Once the project is ready, the plugin has these main tasks:    
 
 #### `nativeCompile`
 
@@ -127,6 +127,14 @@ On mobile only, installs the generated package that was created after `nativePac
 Run:
 
 	./gradlew nativeInstall
+    
+#### `nativeRunAgent`
+
+This task can be run before all the above to use a tracing agent and generate the required config files for native-image.
+
+Run:
+
+	./gradlew nativeRunAgent
     
 ### Requirements
 
