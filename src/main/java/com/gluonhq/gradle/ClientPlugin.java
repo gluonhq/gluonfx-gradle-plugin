@@ -35,7 +35,7 @@ import com.gluonhq.gradle.tasks.ClientNativeInstall;
 import com.gluonhq.gradle.tasks.ClientNativeLink;
 import com.gluonhq.gradle.tasks.ClientNativePackage;
 import com.gluonhq.gradle.tasks.ClientNativeRun;
-import com.gluonhq.gradle.tasks.ClientNativeRunagent;
+import com.gluonhq.gradle.tasks.ClientNativeRunAgent;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
@@ -51,7 +51,7 @@ public class ClientPlugin implements Plugin<Project> {
     public static final String NATIVE_BUILD_TASK_NAME = "nativeBuild";
     public static final String NATIVE_PACKAGE_TASK_NAME = "nativePackage";
     public static final String NATIVE_INSTALL_TASK_NAME = "nativeInstall";
-    public static final String NATIVE_RUNAGENT_TASK_NAME = "nativeRunagent";
+    public static final String NATIVE_RUN_AGENT_TASK_NAME = "nativeRunAgent";
 
     private static final String CONFIGURATION_CLIENT = "client";
 
@@ -77,7 +77,7 @@ public class ClientPlugin implements Plugin<Project> {
         createTask(NATIVE_RUN_TASK_NAME, ClientNativeRun.class, "Runs the native application in the target platform.");
         createTask(NATIVE_PACKAGE_TASK_NAME, ClientNativePackage.class, "Packages the native application for the target platform.");
         createTask(NATIVE_INSTALL_TASK_NAME, ClientNativeInstall.class, "Installs the packaged native application on the target platform.");
-        createTask(NATIVE_RUNAGENT_TASK_NAME, ClientNativeRunagent.class, "Runs tracing agent to generate config files");
+        createTask(NATIVE_RUN_AGENT_TASK_NAME, ClientNativeRunAgent.class, "Runs tracing agent to generate config files");
     }
     
     private void createTask(String name, Class<? extends Task> taskClass, String decription) {

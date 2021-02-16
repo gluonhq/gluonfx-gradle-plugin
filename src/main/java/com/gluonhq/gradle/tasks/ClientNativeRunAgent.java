@@ -42,7 +42,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
-public class ClientNativeRunagent extends ClientNativeBase {
+public class ClientNativeRunAgent extends ClientNativeBase {
 
     private static final String AGENTLIB_NATIVE_IMAGE_AGENT_STRING = "-agentlib:native-image-agent=config-merge-dir=src/main/resources/META-INF/native-image";
 
@@ -50,7 +50,7 @@ public class ClientNativeRunagent extends ClientNativeBase {
     private JavaExec execTask;
 
     @Inject
-    public ClientNativeRunagent(Project project) {
+    public ClientNativeRunAgent(Project project) {
         super(project);
         clientExtension = project.getExtensions().getByType(ClientExtension.class);
 
@@ -63,7 +63,7 @@ public class ClientNativeRunagent extends ClientNativeBase {
 
     @TaskAction
     public void action() {
-        getProject().getLogger().info("ClientNativeRunagent action");
+        getProject().getLogger().info("ClientNativeRunAgent action");
 
         Path graalVMHome = getGraalHome();
 
@@ -101,7 +101,7 @@ public class ClientNativeRunagent extends ClientNativeBase {
             // run
             execTask.exec();
         } catch (Exception e) {
-            throw new GradleException("Runagent failure: " + e);
+            throw new GradleException("RunAgent failure: " + e);
         }
     }
 
