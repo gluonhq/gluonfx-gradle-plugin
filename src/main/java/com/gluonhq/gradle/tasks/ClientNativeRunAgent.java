@@ -38,16 +38,28 @@ import org.gradle.api.tasks.JavaExec;
 import org.gradle.api.tasks.TaskAction;
 
 import javax.inject.Inject;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.List;
 
 public class ClientNativeRunAgent extends ClientNativeBase {
 
-    private static final String AGENTLIB_NATIVE_IMAGE_AGENT_STRING = "-agentlib:native-image-agent=config-merge-dir=src/main/resources/META-INF/native-image";
+    private static final String AGENTLIB_NATIVE_IMAGE_AGENT_STRING =
+            "-agentlib:native-image-agent=access-filter-file=src/main/resources/META-INF/native-image/filter-file.json,config-merge-dir=src/main/resources/META-INF/native-image";
+
+    private static final List<String> AGENTLIB_EXCLUSION_RULES = Arrays.asList(
+            "com.sun.glass.ui.mac.*", "com.sun.prism.es2.MacGLFactory",
+            "com.sun.glass.ui.gtk.*", "com.sun.prism.es2.X11GLFactory",
+            "com.gluonhq.attach.**"
+    );
 
     private final ClientExtension clientExtension;
-    private JavaExec execTask;
 
     @Inject
     public ClientNativeRunAgent(Project project) {
@@ -84,7 +96,14 @@ public class ClientNativeRunAgent extends ClientNativeBase {
                 Files.createDirectories(path);
             }
 
-            execTask = (JavaExec) project.getTasks().findByName(ApplicationPlugin.TASK_RUN_NAME);
+            // Create filter file to exclude platform classes
+            try {
+                createFilterFile(path.resolve("filter-file.json").toString());
+            } catch (IOException e) {
+                throw new GradleException("Error generating agent filter", e);
+            }
+
+            JavaExec execTask = (JavaExec) project.getTasks().findByName(ApplicationPlugin.TASK_RUN_NAME);
             if (execTask == null) {
                 throw new GradleException("Run task not found.");
             }
@@ -116,5 +135,26 @@ public class ClientNativeRunAgent extends ClientNativeBase {
                     " set graalvmHome in the client-plugin configuration");
         }
         return Path.of(graalvmHome);
+    }
+
+    private void createFilterFile(String agentFilter) throws IOException {
+        File agentDirFilter = new File(agentFilter);
+        if (agentDirFilter.exists()) {
+            agentDirFilter.delete();
+        }
+        try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(agentDirFilter)))) {
+            bw.write("{ \"rules\": [\n");
+            boolean ruleHasBeenWritten = false;
+            for (String rule : AGENTLIB_EXCLUSION_RULES) {
+                if (ruleHasBeenWritten) {
+                    bw.write(",\n");
+                } else {
+                    ruleHasBeenWritten = true;
+                }
+                bw.write("    {\"excludeClasses\" : \"" + rule + "\"}");
+            }
+            bw.write("\n  ]\n");
+            bw.write("}\n");
+        }
     }
 }
