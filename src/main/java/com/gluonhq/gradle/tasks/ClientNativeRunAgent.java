@@ -124,7 +124,7 @@ public class ClientNativeRunAgent extends ClientNativeBase {
         }
     }
 
-    Path getGraalHome() {
+    private Path getGraalHome() {
         String graalvmHome = clientExtension.getGraalvmHome();
         if (graalvmHome == null) {
             graalvmHome = System.getenv("GRAALVM_HOME");
