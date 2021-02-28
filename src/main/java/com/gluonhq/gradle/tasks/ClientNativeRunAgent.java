@@ -50,6 +50,8 @@ import java.util.List;
 
 public class ClientNativeRunAgent extends ClientNativeBase {
 
+    private static final String CONFIG_JAVAFX_RUN_TASK = "configJavafxRun";
+
     private static final String AGENTLIB_NATIVE_IMAGE_AGENT_STRING =
             "-agentlib:native-image-agent=access-filter-file=src/main/resources/META-INF/native-image/filter-file.json,config-merge-dir=src/main/resources/META-INF/native-image";
 
@@ -66,9 +68,9 @@ public class ClientNativeRunAgent extends ClientNativeBase {
         super(project);
         clientExtension = project.getExtensions().getByType(ClientExtension.class);
 
-        Task javafxRun = project.getTasks().findByPath(":configJavafxRun");
+        Task javafxRun = project.getTasks().findByName(CONFIG_JAVAFX_RUN_TASK);
         if (javafxRun == null) {
-            throw new GradleException("javafxplugin:configJavafxRun task not found.");
+            throw new GradleException("javafxplugin:" + CONFIG_JAVAFX_RUN_TASK + " task not found.");
         }
         this.dependsOn(javafxRun.getPath());
     }
@@ -87,7 +89,7 @@ public class ClientNativeRunAgent extends ClientNativeBase {
 
         try {
             // folder
-            Path path = Path.of(project.getRootDir().getAbsolutePath(), "src", "main", "resources", "META-INF", "native-image");
+            Path path = Path.of(project.getProjectDir().getAbsolutePath(), "src", "main", "resources", "META-INF", "native-image");
             if (Files.exists(path)) {
                 // TODO: Delete files
                 // otherwise it keeps merging results from different runs
