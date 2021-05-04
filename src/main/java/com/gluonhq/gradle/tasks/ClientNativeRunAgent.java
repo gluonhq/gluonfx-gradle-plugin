@@ -33,9 +33,14 @@ import com.gluonhq.gradle.ClientExtension;
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
+import org.gradle.api.file.FileCollection;
 import org.gradle.api.plugins.ApplicationPlugin;
 import org.gradle.api.tasks.JavaExec;
 import org.gradle.api.tasks.TaskAction;
+import org.gradle.util.GradleVersion;
+import org.openjfx.gradle.JavaFXModule;
+import org.openjfx.gradle.JavaFXOptions;
+import org.openjfx.gradle.JavaFXPlatform;
 
 import javax.inject.Inject;
 import java.io.BufferedWriter;
@@ -45,8 +50,10 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.TreeSet;
 
 public class ClientNativeRunAgent extends ClientNativeBase {
 
@@ -109,15 +116,39 @@ public class ClientNativeRunAgent extends ClientNativeBase {
             if (execTask == null) {
                 throw new GradleException("Run task not found.");
             }
-            // collect all jvmArgs after :configJavafxRun
-            List<String> args = execTask.getAllJvmArgs();
+
+            JavaFXOptions javaFXOptions = project.getExtensions().getByType(JavaFXOptions.class);
+            var definedJavaFXModuleNames = new TreeSet<>(javaFXOptions.getModules());
+            if (definedJavaFXModuleNames.isEmpty()) {
+                throw new GradleException("No JavaFX modules found.");
+            }
+            final FileCollection classpathWithoutJavaFXJars = execTask.getClasspath().filter(
+                    jar -> Arrays.stream(JavaFXModule.values()).noneMatch(javaFXModule ->
+                            jar.getName().contains(javaFXModule.getArtifactName()))
+            );
+            final FileCollection javaFXPlatformJars = execTask.getClasspath().filter(jar ->
+                    isJavaFXJar(jar, javaFXOptions.getPlatform()));
+
+            // Remove all JavaFX jars from classpath
+            execTask.setClasspath(classpathWithoutJavaFXJars);
+
+            // Define JVM args for command line
+            var javaFXModuleJvmArgs = List.of("--module-path", javaFXPlatformJars.getAsPath());
+            var jvmArgs = new ArrayList<>(javaFXModuleJvmArgs);
+            jvmArgs.add("--add-modules");
+            jvmArgs.add(String.join(",", definedJavaFXModuleNames));
+            if (GradleVersion.current().compareTo(GradleVersion.version("6.6")) < 0) {
+                // Include classpath as JVM arg for Gradle versions lower than 6.6
+                jvmArgs.add("-cp");
+                jvmArgs.add(classpathWithoutJavaFXJars.getAsPath());
+            }
 
             // set java_home
             execTask.executable(Path.of(graalVMHome.toString(), "bin", "java").toString());
 
             // set jvmargs
             execTask.getJvmArgs().add(AGENTLIB_NATIVE_IMAGE_AGENT_STRING);
-            execTask.getJvmArgs().addAll(args);
+            execTask.getJvmArgs().addAll(jvmArgs);
 
             // run
             execTask.exec();
@@ -126,7 +157,7 @@ public class ClientNativeRunAgent extends ClientNativeBase {
         }
     }
 
-    Path getGraalHome() {
+    private Path getGraalHome() {
         String graalvmHome = clientExtension.getGraalvmHome();
         if (graalvmHome == null) {
             graalvmHome = System.getenv("GRAALVM_HOME");
@@ -158,5 +189,12 @@ public class ClientNativeRunAgent extends ClientNativeBase {
             bw.write("\n  ]\n");
             bw.write("}\n");
         }
+    }
+
+    private static boolean isJavaFXJar(File jar, JavaFXPlatform platform) {
+        return jar.isFile() &&
+                Arrays.stream(JavaFXModule.values()).anyMatch(javaFXModule ->
+                        javaFXModule.compareJarFileName(platform, jar.getName()) ||
+                                javaFXModule.getModuleJarFileName().equals(jar.getName()));
     }
 }

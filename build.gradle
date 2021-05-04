@@ -33,6 +33,7 @@ dependencies {
 
     testImplementation gradleTestKit()
     implementation 'com.gluonhq:substrate:0.0.38-SNAPSHOT'
+    implementation 'org.openjfx:javafx-plugin:0.0.10'
 }
 
 gradlePlugin {
