@@ -6,6 +6,7 @@ git config --global user.email "githubbot@gluonhq.com"
 
 # Release artifacts
 ./gradlew publish -PgluonNexusUsername=$NEXUS_USERNAME -PgluonNexusPassword=$NEXUS_PASSWORD -PrepositoryUrl=https://nexus.gluonhq.com/nexus/content/repositories/releases
+./gradlew publishPlugins -Pgradle.publish.key=$PUBLISH_KEY -Pgradle.publish.secret=$PUBLISH_SECRET
 
 # Update version by 1
 newVersion=${TRAVIS_TAG%.*}.$((${TRAVIS_TAG##*.} + 1))
