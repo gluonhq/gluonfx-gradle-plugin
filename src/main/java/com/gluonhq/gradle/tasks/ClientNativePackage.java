@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, 2020, Gluon
+ * Copyright (c) 2019, 2021, Gluon
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -52,7 +52,7 @@ public class ClientNativePackage extends ClientNativeBase {
             SubstrateDispatcher dispatcher = new ConfigBuild(project).createSubstrateDispatcher();
             result = dispatcher.nativePackage();
         } catch (Exception e) {
-        	throw new GradleException("Failed to package", e);
+            throw new GradleException("Failed to package", e);
         }
         
         if (!result) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, 2020, Gluon
+ * Copyright (c) 2019, 2021, Gluon
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -68,7 +68,7 @@ class ConfigBuild {
     }
 
     public void build() {
-    	ProjectConfiguration clientConfig = createSubstrateConfiguration();
+        ProjectConfiguration clientConfig = createSubstrateConfiguration();
 
         boolean result;
         try {
@@ -97,7 +97,7 @@ class ConfigBuild {
     }
 
     private ProjectConfiguration createSubstrateConfiguration() {
-    	ProjectConfiguration clientConfig = new ProjectConfiguration((String) project.getProperties().get("mainClassName"), getClassPath());
+        ProjectConfiguration clientConfig = new ProjectConfiguration((String) project.getProperties().get("mainClassName"), getClassPath());
         clientConfig.setJavaStaticSdkVersion(clientExtension.getJavaStaticSdkVersion());
         clientConfig.setJavafxStaticSdkVersion(clientExtension.getJavafxStaticSdkVersion());
 
@@ -166,7 +166,7 @@ class ConfigBuild {
     private Path getGraalHome() {
         String graalvmHome = clientExtension.getGraalvmHome();
         if (graalvmHome == null) {
-        	graalvmHome = System.getenv("GRAALVM_HOME");
+            graalvmHome = System.getenv("GRAALVM_HOME");
         }
         if (graalvmHome == null) {
             throw new GradleException("GraalVM installation directory not found." +

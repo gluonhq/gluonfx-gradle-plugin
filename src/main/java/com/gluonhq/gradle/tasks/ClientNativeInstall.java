@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, 2020, Gluon
+ * Copyright (c) 2019, 2021, Gluon
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -52,7 +52,7 @@ public class ClientNativeInstall extends ClientNativeBase {
             SubstrateDispatcher dispatcher = new ConfigBuild(project).createSubstrateDispatcher();
             result = dispatcher.nativeInstall();
         } catch (Exception e) {
-        	throw new GradleException("Failed to install", e);
+            throw new GradleException("Failed to install", e);
         }
         
         if (!result) {
