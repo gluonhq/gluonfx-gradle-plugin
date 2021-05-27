@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2018, 2019, 2020, Gluon Software
+ * Copyright (c) 2018, 2021, Gluon Software
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -89,6 +89,7 @@ public class AttachServiceDefinition implements Named {
     String getSupportedPlatform(String target) {
         switch (target) {
             case Constants.PROFILE_HOST:
+            case Constants.PROFILE_LINUX_AARCH64:
                 return getService().isDesktopSupported() ? "desktop" : "";
             case Constants.PROFILE_IOS:
             case Constants.PROFILE_IOS_SIM:

@@ -1,13 +1,13 @@
 plugins {
     id 'java-gradle-plugin'
     id 'com.github.hierynomus.license' version '0.15.0'
-    id 'com.gradle.plugin-publish' version '0.10.1'
+    id 'com.gradle.plugin-publish' version '0.14.0'
     id 'com.github.ben-manes.versions' version '0.27.0'
     id 'maven-publish'
 }
 
 group 'com.gluonhq'
-version '0.1.40-SNAPSHOT'
+version '0.1.42-SNAPSHOT'
 
 sourceCompatibility = 11
 targetCompatibility = 11
@@ -32,7 +32,8 @@ dependencies {
     implementation gradleApi()
 
     testImplementation gradleTestKit()
-    implementation 'com.gluonhq:substrate:0.0.38-SNAPSHOT'
+    implementation 'com.gluonhq:substrate:0.0.40-SNAPSHOT'
+    implementation 'org.openjfx:javafx-plugin:0.0.10'
 }
 
 gradlePlugin {

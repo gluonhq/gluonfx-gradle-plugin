@@ -23,7 +23,7 @@ Using the `plugins` DSL, add:
 
 
     plugins {
-        id 'com.gluonhq.client-gradle-plugin' version '0.1.39'
+        id 'com.gluonhq.client-gradle-plugin' version '0.1.41'
     }
     
 This requires adding the plugin repository to the `settings.gradle` file:
@@ -51,7 +51,7 @@ Alternatively, you can use the `buildscript` DSL:
             }
         }
         dependencies {
-            classpath 'com.gluonhq:client-gradle-plugin:0.1.39'
+            classpath 'com.gluonhq:client-gradle-plugin:0.1.41'
         }
     }
     apply plugin: 'com.gluonhq.client-gradle-plugin'
