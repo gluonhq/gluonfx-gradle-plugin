@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, 2020, Gluon
+ * Copyright (c) 2019, 2021, Gluon
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -128,6 +128,7 @@ class ConfigBuild {
         clientConfig.setResourcesList(clientExtension.getResourcesList());
         clientConfig.setJniList(clientExtension.getJniList());
         clientConfig.setCompilerArgs(clientExtension.getCompilerArgs());
+        clientConfig.setRuntimeArgs(clientExtension.getRuntimeArgs());
         clientConfig.setReflectionList(clientExtension.getReflectionList());
         clientConfig.setAppId(project.getGroup() + "." + project.getName());
         clientConfig.setAppName(project.getName());
@@ -136,6 +137,9 @@ class ConfigBuild {
 
         clientConfig.setUsePrismSW(clientExtension.isEnableSwRendering());
         clientConfig.setVerbose(clientExtension.isVerbose());
+
+        clientConfig.setRemoteHostName(clientExtension.getRemoteHostName());
+        clientConfig.setRemoteDir(clientExtension.getRemoteDir());
 
         clientConfig.setReleaseConfiguration(clientExtension.getReleaseConfiguration().toSubstrate());
 
