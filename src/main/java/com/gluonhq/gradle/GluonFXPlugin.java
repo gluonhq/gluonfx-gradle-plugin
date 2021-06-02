@@ -43,7 +43,7 @@ import org.gradle.api.model.ObjectFactory;
 
 import javax.inject.Inject;
 
-public class ClientPlugin implements Plugin<Project> {
+public class GluonFXPlugin implements Plugin<Project> {
 
     public static final String NATIVE_COMPILE_TASK_NAME = "nativeCompile";
     public static final String NATIVE_LINK_TASK_NAME = "nativeLink";
@@ -59,17 +59,17 @@ public class ClientPlugin implements Plugin<Project> {
 	private Project project;
 
     @Inject
-    ClientPlugin(ObjectFactory objectFactory) {
+    GluonFXPlugin(ObjectFactory objectFactory) {
         this.objectFactory = objectFactory;
     }
 
     @Override
     public void apply(Project project) {
     	this.project = project;
-    	
+
         project.getConfigurations().create(CONFIGURATION_CLIENT);
 
-        project.getExtensions().create("gluonClient", ClientExtension.class, project, objectFactory);
+        project.getExtensions().create("gluonFX", ClientExtension.class, project, objectFactory);
 
         createTask(NATIVE_COMPILE_TASK_NAME, ClientNativeCompile.class, "Native AOT compilation of application.");
         createTask(NATIVE_LINK_TASK_NAME, ClientNativeLink.class, "Native link of application.");
