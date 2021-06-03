@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2018, 2019, 2020, Gluon Software
+ * Copyright (c) 2018, 2021, Gluon Software
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,8 +46,8 @@ import com.gluonhq.gradle.ClientExtension;
 import com.gluonhq.substrate.Constants;
 
 public class AttachConfiguration {
-	private static final String DEPENDENCY_GROUP = "com.gluonhq.attach";
-	private static final String UTIL_ARTIFACT = "util";
+    private static final String DEPENDENCY_GROUP = "com.gluonhq.attach";
+    private static final String UTIL_ARTIFACT = "util";
 
     private Project project;
 
@@ -109,10 +109,10 @@ public class AttachConfiguration {
      * configuration will be included.
      */
     private void applyConfiguration() {
-    	if (version == null) {
-    		throw new IllegalStateException("Attach version must be specified!");
-    	}
-    	
+        if (version == null) {
+            throw new IllegalStateException("Attach version must be specified!");
+        }
+
         if (lastAppliedConfiguration != null) {
             lastAppliedConfiguration.getDependencies()
                     .removeIf(dependency -> DEPENDENCY_GROUP.equals(dependency.getGroup()));
@@ -144,7 +144,7 @@ public class AttachConfiguration {
     }
 
     private Map<String, String> generateDependencyNotation(AttachServiceDefinition asd, String target) {
-    	Map<String, String> dependencyNotationMap = new HashMap<>();
+        Map<String, String> dependencyNotationMap = new HashMap<>();
         dependencyNotationMap.put("group", DEPENDENCY_GROUP);
         dependencyNotationMap.put("name", asd.getName());
         dependencyNotationMap.put("version", getVersion());

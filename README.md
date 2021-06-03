@@ -21,7 +21,6 @@ To use the plugin, apply the following steps:
 
 Using the `plugins` DSL, add:
 
-
     plugins {
         id 'com.gluonhq.client-gradle-plugin' version '0.1.41'
     }
@@ -55,7 +54,6 @@ Alternatively, you can use the `buildscript` DSL:
         }
     }
     apply plugin: 'com.gluonhq.client-gradle-plugin'
-    
 
 ### 2. Tasks
 
@@ -98,15 +96,15 @@ Runs the executable in the target platform
 Run:
 
     ./gradlew nativeRun
-    
+
 Or run the three tasks combined:
 
     ./gradlew build nativeBuild nativeRun
-    
+
 Or run directly the application from command line:
 
     build/client/$hostPlatform/$AppName/$AppName    
-    
+
 It will create a distributable native application.
 
 #### `nativePackage`
@@ -115,10 +113,9 @@ On mobile only, create a package of the executable in the target platform
 
 Run:
 
-	./gradlew nativePackage
+    ./gradlew nativePackage
 
 On iOS, this can be used to create an IPA, on Android it will create an APK.
-
 
 #### `nativeInstall`
 
@@ -126,7 +123,7 @@ On mobile only, installs the generated package that was created after `nativePac
 
 Run:
 
-	./gradlew nativeInstall
+    ./gradlew nativeInstall
     
 #### `nativeRunAgent`
 
@@ -134,7 +131,7 @@ This task can be run before all the above to use a tracing agent and generate th
 
 Run:
 
-	./gradlew nativeRunAgent
+    ./gradlew nativeRunAgent
     
 ### Requirements
 
@@ -145,4 +142,4 @@ Check the requirements for the [target platform](https://docs.gluonhq.com/#_plat
 Issues can be reported to the [Issue tracker](https://github.com/gluonhq/client-gradle-plugin/issues)
 
 Contributions can be submitted via [Pull requests](https://github.com/gluonhq/client-gradle-plugin/pulls), 
-providing you have signed the [Gluon Individual Contributor License Agreement (CLA)](https://docs.google.com/forms/d/16aoFTmzs8lZTfiyrEm8YgMqMYaGQl0J8wA0VJE2LCCY).
+providing you have signed the [Gluon Individual Contributor License Agreement (CLA)](https://cla.gluonhq.com).

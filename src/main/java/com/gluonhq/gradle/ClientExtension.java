@@ -278,7 +278,7 @@ public class ClientExtension {
         ConfigureUtil.configure(configureClosure, releaseConfiguration);
     }
 
-	public ReleaseConfiguration getReleaseConfiguration() {
+    public ReleaseConfiguration getReleaseConfiguration() {
         return releaseConfiguration;
     }
 

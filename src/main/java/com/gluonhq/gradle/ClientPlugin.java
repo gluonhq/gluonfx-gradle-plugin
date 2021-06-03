@@ -56,7 +56,7 @@ public class ClientPlugin implements Plugin<Project> {
     private static final String CONFIGURATION_CLIENT = "client";
 
     private ObjectFactory objectFactory;
-	private Project project;
+    private Project project;
 
     @Inject
     ClientPlugin(ObjectFactory objectFactory) {
@@ -65,8 +65,8 @@ public class ClientPlugin implements Plugin<Project> {
 
     @Override
     public void apply(Project project) {
-    	this.project = project;
-    	
+        this.project = project;
+
         project.getConfigurations().create(CONFIGURATION_CLIENT);
 
         project.getExtensions().create("gluonClient", ClientExtension.class, project, objectFactory);
@@ -81,8 +81,8 @@ public class ClientPlugin implements Plugin<Project> {
     }
     
     private void createTask(String name, Class<? extends Task> taskClass, String decription) {
-    	Task t = project.getTasks().create(name, taskClass, project);
-    	t.setGroup("Gluon client");
-    	t.setDescription(decription);
+        Task t = project.getTasks().create(name, taskClass, project);
+        t.setGroup("Gluon client");
+        t.setDescription(decription);
     }
 }
