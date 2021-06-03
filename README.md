@@ -22,7 +22,7 @@ To use the plugin, apply the following steps:
 Using the `plugins` DSL, add:
 
     plugins {
-        id 'com.gluonhq.client-gradle-plugin' version '0.1.41'
+        id 'com.gluonhq.client-gradle-plugin' version '0.1.42'
     }
     
 This requires adding the plugin repository to the `settings.gradle` file:
@@ -50,7 +50,7 @@ Alternatively, you can use the `buildscript` DSL:
             }
         }
         dependencies {
-            classpath 'com.gluonhq:client-gradle-plugin:0.1.41'
+            classpath 'com.gluonhq:client-gradle-plugin:0.1.42'
         }
     }
     apply plugin: 'com.gluonhq.client-gradle-plugin'
