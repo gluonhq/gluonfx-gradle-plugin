@@ -56,7 +56,7 @@ public class GluonFXPlugin implements Plugin<Project> {
     private static final String CONFIGURATION_CLIENT = "client";
 
     private ObjectFactory objectFactory;
-	private Project project;
+    private Project project;
 
     @Inject
     GluonFXPlugin(ObjectFactory objectFactory) {
@@ -65,7 +65,7 @@ public class GluonFXPlugin implements Plugin<Project> {
 
     @Override
     public void apply(Project project) {
-    	this.project = project;
+        this.project = project;
 
         project.getConfigurations().create(CONFIGURATION_CLIENT);
 
@@ -81,8 +81,8 @@ public class GluonFXPlugin implements Plugin<Project> {
     }
     
     private void createTask(String name, Class<? extends Task> taskClass, String decription) {
-    	Task t = project.getTasks().create(name, taskClass, project);
-    	t.setGroup("Gluon client");
-    	t.setDescription(decription);
+        Task t = project.getTasks().create(name, taskClass, project);
+        t.setGroup("GluonFX");
+        t.setDescription(decription);
     }
 }

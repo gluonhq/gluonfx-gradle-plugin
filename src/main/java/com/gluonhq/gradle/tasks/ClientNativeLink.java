@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, 2020, Gluon
+ * Copyright (c) 2019, 2021, Gluon
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -52,11 +52,11 @@ public class ClientNativeLink extends ClientNativeBase {
             SubstrateDispatcher dispatcher = new ConfigBuild(project).createSubstrateDispatcher();
             result = dispatcher.nativeLink();
         } catch (Exception e) {
-        	throw new GradleException("Failed to link", e);
+            throw new GradleException("Failed to link", e);
         }
 
         if (!result) {
-        	throw new GradleException("Linking failed");
+            throw new GradleException("Linking failed");
         }
     }
 }
