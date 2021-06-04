@@ -7,7 +7,7 @@ plugins {
 }
 
 group 'com.gluonhq'
-version '0.1.43-SNAPSHOT'
+version '0.9.0-SNAPSHOT'
 
 sourceCompatibility = 11
 targetCompatibility = 11
@@ -38,18 +38,18 @@ dependencies {
 
 gradlePlugin {
     plugins {
-        clientPlugin {
-            id = 'com.gluonhq.client-gradle-plugin'
-            displayName = 'Gluon Client Plugin'
-            description = 'Plugin that simplifies using Gluon Client for JavaFX projects'
-            implementationClass = 'com.gluonhq.gradle.ClientPlugin'
+        gluonFXPlugin {
+            id = 'com.gluonhq.gluonfx-gradle-plugin'
+            displayName = 'GluonFX Plugin'
+            description = 'GluonFX plugin allows to run JavaFX application on the JVM or to create their native images.'
+            implementationClass = 'com.gluonhq.gradle.GluonFXPlugin'
         }
     }
 }
 
 pluginBundle {
-    website = 'https://github.com/gluonhq/client-gradle-plugin'
-    vcsUrl = 'https://github.com/gluonhq/client-gradle-plugin'
+    website = 'https://github.com/gluonhq/gluonfx-gradle-plugin'
+    vcsUrl = 'https://github.com/gluonhq/gluonfx-gradle-plugin'
     tags = [ 'java', 'javafx', 'gluon', 'client', 'substrate', 'graalvm', 'aot' ]
 }
 
@@ -57,7 +57,7 @@ publishing {
     publications {
         maven(MavenPublication) {
             groupId = project.group
-            artifactId = 'client-gradle-plugin'
+            artifactId = 'gluonfx-gradle-plugin'
             version = project.version
         }
     }

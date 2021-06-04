@@ -37,26 +37,26 @@ import org.gradle.api.tasks.TaskAction;
 
 import com.gluonhq.substrate.SubstrateDispatcher;
 
-public class ClientNativeLink extends ClientNativeBase {
+public class NativePackageTask extends NativeBaseTask {
     @Inject
-    public ClientNativeLink(Project project) {
+    public NativePackageTask(Project project) {
         super(project);
     }
 
     @TaskAction
     public void action() {
-        getProject().getLogger().info("ClientNativeLink action");
+        getProject().getLogger().info("ClientNativePackage action");
 
         boolean result;
         try {
             SubstrateDispatcher dispatcher = new ConfigBuild(project).createSubstrateDispatcher();
-            result = dispatcher.nativeLink();
+            result = dispatcher.nativePackage();
         } catch (Exception e) {
-            throw new GradleException("Failed to link", e);
+            throw new GradleException("Failed to package", e);
         }
 
         if (!result) {
-            throw new GradleException("Linking failed");
+            throw new GradleException("Packaging failed");
         }
     }
 }

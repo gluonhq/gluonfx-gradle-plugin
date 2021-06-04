@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Gluon
+ * Copyright (c) 2019, 2021, Gluon
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,21 +29,28 @@
  */
 package com.gluonhq.gradle.tasks;
 
-import org.gradle.api.DefaultTask;
+import javax.inject.Inject;
+
 import org.gradle.api.Project;
 import org.gradle.api.tasks.TaskAction;
 
-import javax.inject.Inject;
+import com.gluonhq.substrate.SubstrateDispatcher;
 
-public class ClientNativeBuild extends DefaultTask {
-
+public class NativeRunTask extends NativeBaseTask {
     @Inject
-    public ClientNativeBuild(Project project) {
-        dependsOn(project.getTasks().findByName("nativeCompile"), project.getTasks().findByName("nativeLink"));
+    public NativeRunTask(Project project) {
+        super(project);
     }
 
     @TaskAction
     public void action() {
-        getProject().getLogger().info("ClientNativeBuild action");
+        getProject().getLogger().info("ClientNativeRun action");
+
+        try {
+            SubstrateDispatcher dispatcher = new ConfigBuild(project).createSubstrateDispatcher();
+            dispatcher.nativeRun();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

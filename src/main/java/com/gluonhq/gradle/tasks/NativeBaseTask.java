@@ -29,34 +29,21 @@
  */
 package com.gluonhq.gradle.tasks;
 
+import org.gradle.api.DefaultTask;
+import org.gradle.api.Project;
+import org.gradle.api.plugins.JavaPlugin;
+
 import javax.inject.Inject;
 
-import org.gradle.api.GradleException;
-import org.gradle.api.Project;
-import org.gradle.api.tasks.TaskAction;
+abstract class NativeBaseTask extends DefaultTask {
 
-import com.gluonhq.substrate.SubstrateDispatcher;
+    final Project project;
 
-public class ClientNativePackage extends ClientNativeBase {
     @Inject
-    public ClientNativePackage(Project project) {
-        super(project);
-    }
-
-    @TaskAction
-    public void action() {
-        getProject().getLogger().info("ClientNativePackage action");
-
-        boolean result;
-        try {
-            SubstrateDispatcher dispatcher = new ConfigBuild(project).createSubstrateDispatcher();
-            result = dispatcher.nativePackage();
-        } catch (Exception e) {
-            throw new GradleException("Failed to package", e);
-        }
-        
-        if (!result) {
-            throw new GradleException("Packaging failed");
-        }
+    public NativeBaseTask(Project project) {
+        this.project = project;
+        project.getPluginManager().withPlugin("java", e ->
+                dependsOn(project.getTasks().findByName(JavaPlugin.CLASSES_TASK_NAME),
+                          project.getTasks().findByName(JavaPlugin.PROCESS_RESOURCES_TASK_NAME)));
     }
 }
