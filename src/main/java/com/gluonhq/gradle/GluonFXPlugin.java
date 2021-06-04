@@ -69,7 +69,7 @@ public class GluonFXPlugin implements Plugin<Project> {
 
         project.getConfigurations().create(CONFIGURATION_CLIENT);
 
-        project.getExtensions().create("gluonFX", ClientExtension.class, project, objectFactory);
+        project.getExtensions().create("gluonfx", ClientExtension.class, project, objectFactory);
 
         createTask(NATIVE_COMPILE_TASK_NAME, NativeCompileTask.class, "Native AOT compilation of application.");
         createTask(NATIVE_LINK_TASK_NAME, NativeLinkTask.class, "Native link of application.");
