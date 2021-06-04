@@ -29,13 +29,13 @@
  */
 package com.gluonhq.gradle;
 
-import com.gluonhq.gradle.tasks.ClientNativeBuild;
-import com.gluonhq.gradle.tasks.ClientNativeCompile;
-import com.gluonhq.gradle.tasks.ClientNativeInstall;
-import com.gluonhq.gradle.tasks.ClientNativeLink;
-import com.gluonhq.gradle.tasks.ClientNativePackage;
-import com.gluonhq.gradle.tasks.ClientNativeRun;
-import com.gluonhq.gradle.tasks.ClientNativeRunAgent;
+import com.gluonhq.gradle.tasks.NativeBuildTask;
+import com.gluonhq.gradle.tasks.NativeCompileTask;
+import com.gluonhq.gradle.tasks.NativeInstallTask;
+import com.gluonhq.gradle.tasks.NativeLinkTask;
+import com.gluonhq.gradle.tasks.NativePackageTask;
+import com.gluonhq.gradle.tasks.NativeRunTask;
+import com.gluonhq.gradle.tasks.NativeRunAgentTask;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
@@ -71,18 +71,18 @@ public class GluonFXPlugin implements Plugin<Project> {
 
         project.getExtensions().create("gluonFX", ClientExtension.class, project, objectFactory);
 
-        createTask(NATIVE_COMPILE_TASK_NAME, ClientNativeCompile.class, "Native AOT compilation of application.");
-        createTask(NATIVE_LINK_TASK_NAME, ClientNativeLink.class, "Native link of application.");
-        createTask(NATIVE_BUILD_TASK_NAME, ClientNativeBuild.class, "Combines AOT compilation and link of application.");
-        createTask(NATIVE_RUN_TASK_NAME, ClientNativeRun.class, "Runs the native application in the target platform.");
-        createTask(NATIVE_PACKAGE_TASK_NAME, ClientNativePackage.class, "Packages the native application for the target platform.");
-        createTask(NATIVE_INSTALL_TASK_NAME, ClientNativeInstall.class, "Installs the packaged native application on the target platform.");
-        createTask(NATIVE_RUN_AGENT_TASK_NAME, ClientNativeRunAgent.class, "Runs tracing agent to generate config files");
+        createTask(NATIVE_COMPILE_TASK_NAME, NativeCompileTask.class, "Native AOT compilation of application.");
+        createTask(NATIVE_LINK_TASK_NAME, NativeLinkTask.class, "Native link of application.");
+        createTask(NATIVE_BUILD_TASK_NAME, NativeBuildTask.class, "Combines AOT compilation and link of application.");
+        createTask(NATIVE_RUN_TASK_NAME, NativeRunTask.class, "Runs the native application in the target platform.");
+        createTask(NATIVE_PACKAGE_TASK_NAME, NativePackageTask.class, "Packages the native application for the target platform.");
+        createTask(NATIVE_INSTALL_TASK_NAME, NativeInstallTask.class, "Installs the packaged native application on the target platform.");
+        createTask(NATIVE_RUN_AGENT_TASK_NAME, NativeRunAgentTask.class, "Runs tracing agent to generate config files");
     }
     
-    private void createTask(String name, Class<? extends Task> taskClass, String decription) {
+    private void createTask(String name, Class<? extends Task> taskClass, String description) {
         Task t = project.getTasks().create(name, taskClass, project);
         t.setGroup("GluonFX");
-        t.setDescription(decription);
+        t.setDescription(description);
     }
 }

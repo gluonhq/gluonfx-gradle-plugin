@@ -55,7 +55,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.TreeSet;
 
-public class ClientNativeRunAgent extends ClientNativeBase {
+public class NativeRunAgentTask extends NativeBaseTask {
 
     private static final String CONFIG_JAVAFX_RUN_TASK = "configJavafxRun";
 
@@ -71,7 +71,7 @@ public class ClientNativeRunAgent extends ClientNativeBase {
     private final ClientExtension clientExtension;
 
     @Inject
-    public ClientNativeRunAgent(Project project) {
+    public NativeRunAgentTask(Project project) {
         super(project);
         clientExtension = project.getExtensions().getByType(ClientExtension.class);
 

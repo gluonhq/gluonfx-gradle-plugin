@@ -82,7 +82,7 @@ class ConfigBuild {
             }
             project.getLogger().debug("mainClassName = " + mainClassName + " and app name = " + name);
 
-            Path buildRootPath = project.getLayout().getBuildDirectory().dir("client").get().getAsFile().toPath();
+            Path buildRootPath = project.getLayout().getBuildDirectory().dir("gluonfx").get().getAsFile().toPath();
             project.getLogger().debug("BuildRoot: " + buildRootPath);
             
             SubstrateDispatcher dispatcher = new SubstrateDispatcher(buildRootPath, clientConfig);
@@ -175,7 +175,7 @@ class ConfigBuild {
         if (graalvmHome == null) {
             throw new GradleException("GraalVM installation directory not found." +
                     " Either set GRAALVM_HOME as an environment variable or" +
-                    " set graalvmHome in the client-plugin configuration");
+                    " set graalvmHome in the gluonfx-plugin configuration");
         }
         return Path.of(graalvmHome);
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Gluon
+ * Copyright (c) 2019, 2021, Gluon
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,10 +34,10 @@ import org.gradle.api.tasks.TaskAction;
 
 import javax.inject.Inject;
 
-public class ClientNativeCompile extends ClientNativeBase {
+public class NativeCompileTask extends NativeBaseTask {
 
     @Inject
-    public ClientNativeCompile(Project project) {
+    public NativeCompileTask(Project project) {
         super(project);
     }
 
