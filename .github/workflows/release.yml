@@ -1,0 +1,49 @@
+name: Release
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup Java 11 and Apache Maven
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+
+      - name: Configure GIT
+        run: |
+          git config --global user.name "Gluon Bot"
+          git config --global user.email "githubbot@gluonhq.com"
+
+      - name: Publish to Gradle Plugin Repository
+        run: |
+          ./gradlew publishPlugins -Pgradle.publish.key=$PUBLISH_KEY -Pgradle.publish.secret=$PUBLISH_SECRET
+        env:
+          PUBLISH_KEY: ${{ secrets.PUBLISH_KEY }}
+          PUBLISH_SECRET: ${{ secrets.PUBLISH_SECRET }}
+
+      - name: Commit next development version
+        if: steps.deploy.outputs.exit_code == 0
+        run: |
+          TAG=${GITHUB_REF/refs\/tags\//}
+          bash $GITHUB_WORKSPACE/.github/scripts/update-next-development.sh "$TAG"
+        shell: bash
+        env:
+          GITHUB_PASSWORD: ${{ secrets.PAT }}
+            
+      - name: Update ide-plugin properties
+        if: steps.deploy.outputs.exit_code == 0
+        run: |
+          TAG=${GITHUB_REF/refs\/tags\//}
+          echo "Update ide-plugin properties"
+          bash $GITHUB_WORKSPACE/.github/scripts/update-ide-properties.sh "$TAG"
+        shell: bash
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
