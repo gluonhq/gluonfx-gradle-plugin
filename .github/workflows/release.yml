@@ -36,12 +36,12 @@ jobs:
         if: steps.deploy.outputs.exit_code == 0
         run: |
           TAG=${GITHUB_REF/refs\/tags\//}
-          bash $GITHUB_WORKSPACE/.github/scripts/update-next-development.sh "$TAG" "$PAT"
+          bash $GITHUB_WORKSPACE/.github/scripts/update-next-development.sh "$TAG"
         shell: bash
         env:
-          PAT: ${{ secrets.PAT }}
+          GITHUB_PASSWORD: ${{ secrets.PAT }}
             
-      - name: Commit next development version
+      - name: Update ide-plugin properties
         if: steps.deploy.outputs.exit_code == 0
         run: |
           TAG=${GITHUB_REF/refs\/tags\//}
@@ -49,4 +49,5 @@ jobs:
           bash $GITHUB_WORKSPACE/.github/scripts/update-ide-properties.sh "$TAG"
         shell: bash
         env:
-          PAT: ${{ secrets.PAT }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_KEY }}

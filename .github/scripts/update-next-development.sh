@@ -16,7 +16,7 @@ sed -i "0,/'com.gluonhq:gluonfx-gradle-plugin:.*'/s//'com.gluonhq:gluonfx-gradle
 git commit README.md -m "Use latest release v$TAG in README"
 
 # Replace first occurrence of 
-# version 'TRAVIS_TAG' 
+# version 'TAG' 
 # with 
 # version 'newVersion-SNAPSHOT'
 sed -i -z "0,/\nversion '$TAG'/s//\nversion '$newVersion-SNAPSHOT'/" build.gradle
