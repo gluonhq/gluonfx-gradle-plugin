@@ -3,10 +3,6 @@
 # Assign parameter to variable
 TAG=$1
 
-# Configure GIT
-git config --global user.name "Gluon Bot"
-git config --global user.email "githubbot@gluonhq.com"
-
 # Update version by 1
 newVersion=${TAG%.*}.$((${TAG##*.} + 1))
 
