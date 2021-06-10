@@ -23,12 +23,8 @@ jobs:
 
       - name: Publish to Gradle Plugin Repository
         run: |
-          # Release artifacts
-          ./gradlew publish -PgluonNexusUsername=$NEXUS_USERNAME -PgluonNexusPassword=$NEXUS_PASSWORD -PrepositoryUrl=https://nexus.gluonhq.com/nexus/content/repositories/releases
           ./gradlew publishPlugins -Pgradle.publish.key=$PUBLISH_KEY -Pgradle.publish.secret=$PUBLISH_SECRET
         env:
-          NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
-          NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
           PUBLISH_KEY: ${{ secrets.PUBLISH_KEY }}
           PUBLISH_SECRET: ${{ secrets.PUBLISH_SECRET }}
 
@@ -49,5 +45,5 @@ jobs:
           bash $GITHUB_WORKSPACE/.github/scripts/update-ide-properties.sh "$TAG"
         shell: bash
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_KEY }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

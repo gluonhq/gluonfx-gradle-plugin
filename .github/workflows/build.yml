@@ -19,17 +19,22 @@ jobs:
         with:
           java-version: 11
 
-      - name: Publish Snapshots
-        run: |
-          # Find project version
-          ver=$(./gradlew properties -q | grep "version:" | awk '{print $2}')
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
 
-          # deploy if snapshot found
+      - name: Build project
+        run: |
+          ./gradlew -i build
+
+      - name: Publish Snapshots
+        if: github.ref == 'refs/heads/master'
+        run: |
+          ver=$(./gradlew properties -q | grep "version:" | awk '{print $2}')
           if [[ $ver == *"SNAPSHOT"* ]] 
           then
-              ./gradlew publish -PgluonNexusUsername=$NEXUS_USERNAME -PgluonNexusPassword=$NEXUS_PASSWORD
+              ./gradlew publish -PsonatypeUsername=$SONATYPE_USERNAME -PsonatypePassword=$SONATYPE_PASSWORD
           fi
         shell: bash
         env:
-          MAVEN_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
-          MAVEN_CENTRAL_TOKEN: ${{ secrets.SONATYPE_PASSWORD }}
+          SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
