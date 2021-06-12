@@ -10,6 +10,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 5
+          persist-credentials: false
 
       - name: Setup Java 11 and Apache Maven
         uses: actions/setup-java@v1
