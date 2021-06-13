@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, 2020, Gluon
+ * Copyright (c) 2019, 2021, Gluon
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,34 +29,21 @@
  */
 package com.gluonhq.gradle.tasks;
 
-import javax.inject.Inject;
-
-import org.gradle.api.GradleException;
+import org.gradle.api.DefaultTask;
 import org.gradle.api.Project;
 import org.gradle.api.tasks.TaskAction;
 
-import com.gluonhq.substrate.SubstrateDispatcher;
+import javax.inject.Inject;
 
-public class ClientNativeLink extends ClientNativeBase {
+public class NativeBuildTask extends DefaultTask {
+
     @Inject
-    public ClientNativeLink(Project project) {
-        super(project);
+    public NativeBuildTask(Project project) {
+        dependsOn(project.getTasks().findByName("nativeCompile"), project.getTasks().findByName("nativeLink"));
     }
 
     @TaskAction
     public void action() {
-        getProject().getLogger().info("ClientNativeLink action");
-
-        boolean result;
-        try {
-            SubstrateDispatcher dispatcher = new ConfigBuild(project).createSubstrateDispatcher();
-            result = dispatcher.nativeLink();
-        } catch (Exception e) {
-        	throw new GradleException("Failed to link", e);
-        }
-
-        if (!result) {
-        	throw new GradleException("Linking failed");
-        }
+        getProject().getLogger().info("ClientNativeBuild action");
     }
 }

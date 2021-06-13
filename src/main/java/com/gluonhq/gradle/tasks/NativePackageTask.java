@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, 2020, Gluon
+ * Copyright (c) 2019, 2021, Gluon
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,9 +37,9 @@ import org.gradle.api.tasks.TaskAction;
 
 import com.gluonhq.substrate.SubstrateDispatcher;
 
-public class ClientNativePackage extends ClientNativeBase {
+public class NativePackageTask extends NativeBaseTask {
     @Inject
-    public ClientNativePackage(Project project) {
+    public NativePackageTask(Project project) {
         super(project);
     }
 
@@ -52,9 +52,9 @@ public class ClientNativePackage extends ClientNativeBase {
             SubstrateDispatcher dispatcher = new ConfigBuild(project).createSubstrateDispatcher();
             result = dispatcher.nativePackage();
         } catch (Exception e) {
-        	throw new GradleException("Failed to package", e);
+            throw new GradleException("Failed to package", e);
         }
-        
+
         if (!result) {
             throw new GradleException("Packaging failed");
         }

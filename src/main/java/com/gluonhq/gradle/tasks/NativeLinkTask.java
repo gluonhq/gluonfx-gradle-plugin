@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, 2020, Gluon
+ * Copyright (c) 2019, 2021, Gluon
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,26 +37,26 @@ import org.gradle.api.tasks.TaskAction;
 
 import com.gluonhq.substrate.SubstrateDispatcher;
 
-public class ClientNativeInstall extends ClientNativeBase {
+public class NativeLinkTask extends NativeBaseTask {
     @Inject
-    public ClientNativeInstall(Project project) {
+    public NativeLinkTask(Project project) {
         super(project);
     }
 
     @TaskAction
     public void action() {
-        getProject().getLogger().info("ClientNativeInstall action");
+        getProject().getLogger().info("ClientNativeLink action");
 
         boolean result;
         try {
             SubstrateDispatcher dispatcher = new ConfigBuild(project).createSubstrateDispatcher();
-            result = dispatcher.nativeInstall();
+            result = dispatcher.nativeLink();
         } catch (Exception e) {
-        	throw new GradleException("Failed to install", e);
+            throw new GradleException("Failed to link", e);
         }
-        
+
         if (!result) {
-            throw new GradleException("Installing failed");
+            throw new GradleException("Linking failed");
         }
     }
 }

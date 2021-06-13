@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, 2020, Gluon
+ * Copyright (c) 2019, 2021, Gluon
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -68,7 +68,7 @@ class ConfigBuild {
     }
 
     public void build() {
-    	ProjectConfiguration clientConfig = createSubstrateConfiguration();
+        ProjectConfiguration clientConfig = createSubstrateConfiguration();
 
         boolean result;
         try {
@@ -82,7 +82,7 @@ class ConfigBuild {
             }
             project.getLogger().debug("mainClassName = " + mainClassName + " and app name = " + name);
 
-            Path buildRootPath = project.getLayout().getBuildDirectory().dir("client").get().getAsFile().toPath();
+            Path buildRootPath = project.getLayout().getBuildDirectory().dir("gluonfx").get().getAsFile().toPath();
             project.getLogger().debug("BuildRoot: " + buildRootPath);
             
             SubstrateDispatcher dispatcher = new SubstrateDispatcher(buildRootPath, clientConfig);
@@ -97,7 +97,7 @@ class ConfigBuild {
     }
 
     private ProjectConfiguration createSubstrateConfiguration() {
-    	ProjectConfiguration clientConfig = new ProjectConfiguration((String) project.getProperties().get("mainClassName"), getClassPath());
+        ProjectConfiguration clientConfig = new ProjectConfiguration((String) project.getProperties().get("mainClassName"), getClassPath());
         clientConfig.setJavaStaticSdkVersion(clientExtension.getJavaStaticSdkVersion());
         clientConfig.setJavafxStaticSdkVersion(clientExtension.getJavafxStaticSdkVersion());
 
@@ -128,6 +128,7 @@ class ConfigBuild {
         clientConfig.setResourcesList(clientExtension.getResourcesList());
         clientConfig.setJniList(clientExtension.getJniList());
         clientConfig.setCompilerArgs(clientExtension.getCompilerArgs());
+        clientConfig.setRuntimeArgs(clientExtension.getRuntimeArgs());
         clientConfig.setReflectionList(clientExtension.getReflectionList());
         clientConfig.setAppId(project.getGroup() + "." + project.getName());
         clientConfig.setAppName(project.getName());
@@ -136,6 +137,9 @@ class ConfigBuild {
 
         clientConfig.setUsePrismSW(clientExtension.isEnableSwRendering());
         clientConfig.setVerbose(clientExtension.isVerbose());
+
+        clientConfig.setRemoteHostName(clientExtension.getRemoteHostName());
+        clientConfig.setRemoteDir(clientExtension.getRemoteDir());
 
         clientConfig.setReleaseConfiguration(clientExtension.getReleaseConfiguration().toSubstrate());
 
@@ -166,12 +170,12 @@ class ConfigBuild {
     private Path getGraalHome() {
         String graalvmHome = clientExtension.getGraalvmHome();
         if (graalvmHome == null) {
-        	graalvmHome = System.getenv("GRAALVM_HOME");
+            graalvmHome = System.getenv("GRAALVM_HOME");
         }
         if (graalvmHome == null) {
             throw new GradleException("GraalVM installation directory not found." +
                     " Either set GRAALVM_HOME as an environment variable or" +
-                    " set graalvmHome in the client-plugin configuration");
+                    " set graalvmHome in the gluonfx-plugin configuration");
         }
         return Path.of(graalvmHome);
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, 2020, Gluon
+ * Copyright (c) 2019, 2021, Gluon
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -87,6 +87,11 @@ public class ClientExtension {
     private final List<String> compilerArgs;
 
     /**
+     * List of optional compiler arguments
+     */
+    private final List<String> runtimeArgs;
+
+    /**
      * The Java static SDK version
      */
     private String javaStaticSdkVersion;
@@ -113,6 +118,20 @@ public class ClientExtension {
      */
     private boolean enableSwRendering;
 
+    /**
+     * host name for remote deploying, typically to an
+     * embedded system, providing it is reachable and SSH is
+     * enabled
+     */
+    private String remoteHostName;
+
+    /**
+     * Sets the directory where the native image will be
+     * deployed on the remote system, providing the remote
+     * host is reachable and SSH is enabled.
+     */
+    private String remoteDir;
+
     private AttachConfiguration attachConfiguration;
     private ReleaseConfiguration releaseConfiguration;
 
@@ -123,6 +142,7 @@ public class ClientExtension {
         this.reflectionList = new ArrayList<>();
         this.jniList = new ArrayList<>();
         this.compilerArgs = new ArrayList<>();
+        this.runtimeArgs = new ArrayList<>();
 
         attachConfiguration = objectFactory.newInstance(AttachConfiguration.class, project);
         releaseConfiguration = objectFactory.newInstance(ReleaseConfiguration.class, project);
@@ -205,6 +225,15 @@ public class ClientExtension {
         return compilerArgs;
     }
 
+    public void setRuntimeArgs(List<String> compilerArgs) {
+        this.runtimeArgs.clear();
+        this.runtimeArgs.addAll(compilerArgs);
+    }
+
+    public List<String> getRuntimeArgs() {
+        return runtimeArgs;
+    }
+
     public boolean isVerbose() {
         return verbose;
     }
@@ -221,6 +250,22 @@ public class ClientExtension {
         this.enableSwRendering = enableSwRendering;
     }
 
+    public void setRemoteHostName(String remoteHostName) {
+        this.remoteHostName = remoteHostName;
+    }
+
+    public String getRemoteHostName() {
+        return remoteHostName;
+    }
+
+    public void setRemoteDir(String remoteDir) {
+        this.remoteDir = remoteDir;
+    }
+
+    public String getRemoteDir() {
+        return remoteDir;
+    }
+
     public void attachConfig(Closure<?> configureClosure) {
         ConfigureUtil.configure(configureClosure, attachConfiguration);
     }
@@ -233,7 +278,7 @@ public class ClientExtension {
         ConfigureUtil.configure(configureClosure, releaseConfiguration);
     }
 
-	public ReleaseConfiguration getReleaseConfiguration() {
+    public ReleaseConfiguration getReleaseConfiguration() {
         return releaseConfiguration;
     }
 

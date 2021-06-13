@@ -1,15 +1,16 @@
-# Gluon Client plugin for Gradle
+# GluonFX plugin for Gradle
 
-The Gluon Client plugin for gradle projects leverages GraalVM, OpenJDK and JavaFX 11+, 
+[![Plugin Portal](https://img.shields.io/maven-metadata/v?label=Gradle%20Plugin%20Portal&metadataUrl=https://plugins.gradle.org/m2/com/gluonhq/gluonfx-gradle-plugin/maven-metadata.xml)](https://plugins.gradle.org/plugin/com.gluonhq.gluonfx-gradle-plugin)
+[![Build](https://github.com/gluonhq/gluonfx-gradle-plugin/actions/workflows/build.yml/badge.svg)](https://github.com/gluonhq/gluonfx-gradle-plugin/actions/workflows/build.yml)
+[![BSD-3 license](https://img.shields.io/badge/license-BSD--3-%230778B9.svg)](https://opensource.org/licenses/BSD-3-Clause)
+
+GluonFX plugin for gradle projects leverages GraalVM, OpenJDK and JavaFX 11+, 
 by compiling into native code the Java Client application and all its required dependencies, 
 so it can directly be executed as a native application on the target platform.
 
-[![Travis CI](https://api.travis-ci.org/gluonhq/client-gradle-plugin.svg?branch=master)](https://travis-ci.org/gluonhq/client-gradle-plugin)
-[![BSD-3 license](https://img.shields.io/badge/license-BSD--3-%230778B9.svg)](https://opensource.org/licenses/BSD-3-Clause)
-
 # Important Notice
 
-Gluon releases the [Client plugin for Maven](https://github.com/gluonhq/client-maven-plugin), and this plugin is maintained and kept up to date by the community.
+Gluon releases the [GluonFX plugin for Maven](https://github.com/gluonhq/gluonfx-maven-plugin), and this plugin is maintained and kept up to date by the community.
 
 Use at your own risk.
 
@@ -21,19 +22,14 @@ To use the plugin, apply the following steps:
 
 Using the `plugins` DSL, add:
 
-
     plugins {
-        id 'com.gluonhq.client-gradle-plugin' version '0.1.41'
+        id 'com.gluonhq.gluonfx-gradle-plugin' version '0.9.0'
     }
-    
+
 This requires adding the plugin repository to the `settings.gradle` file:
 
     pluginManagement {
         repositories {
-            maven {
-                url "https://nexus.gluonhq.com/nexus/content/repositories/releases"
-            }
-            
             gradlePluginPortal()
         }
     }
@@ -44,18 +40,15 @@ Alternatively, you can use the `buildscript` DSL:
     buildscript {
         repositories {
             maven {
-                url "https://nexus.gluonhq.com/nexus/content/repositories/releases"
-            }
-            maven {
                 url "https://plugins.gradle.org/m2/"
             }
         }
         dependencies {
-            classpath 'com.gluonhq:client-gradle-plugin:0.1.41'
+            classpath 'com.gluonhq:gluonfx-gradle-plugin:0.9.0'
         }
     }
-    apply plugin: 'com.gluonhq.client-gradle-plugin'
-    
+    apply plugin: 'com.gluonhq.gluonfx-gradle-plugin'
+
 
 ### 2. Tasks
 
@@ -63,7 +56,7 @@ You can run the regular tasks to build and run your project as a regular VM proj
 
     ./gradlew clean build
     ./gradlew run
-    
+
 Once the project is ready, the plugin has these main tasks:    
 
 #### `nativeCompile`
@@ -84,9 +77,9 @@ When the object is created, this task will generate the native executable for th
 Run:
 
     ./gradlew nativeLink
-    
+
 The results will be available at `$buildDir/client/$hostPlatform/$AppName`.
-    
+
 #### `nativeBuild`
 
 This task simply combines `nativeCompile` and `nativeLink`.
@@ -98,15 +91,15 @@ Runs the executable in the target platform
 Run:
 
     ./gradlew nativeRun
-    
+
 Or run the three tasks combined:
 
     ./gradlew build nativeBuild nativeRun
-    
+
 Or run directly the application from command line:
 
     build/client/$hostPlatform/$AppName/$AppName    
-    
+
 It will create a distributable native application.
 
 #### `nativePackage`
@@ -115,10 +108,9 @@ On mobile only, create a package of the executable in the target platform
 
 Run:
 
-	./gradlew nativePackage
+    ./gradlew nativePackage
 
 On iOS, this can be used to create an IPA, on Android it will create an APK.
-
 
 #### `nativeInstall`
 
@@ -126,7 +118,7 @@ On mobile only, installs the generated package that was created after `nativePac
 
 Run:
 
-	./gradlew nativeInstall
+    ./gradlew nativeInstall
     
 #### `nativeRunAgent`
 
@@ -134,15 +126,15 @@ This task can be run before all the above to use a tracing agent and generate th
 
 Run:
 
-	./gradlew nativeRunAgent
-    
+    ./gradlew nativeRunAgent
+
 ### Requirements
 
 Check the requirements for the [target platform](https://docs.gluonhq.com/#_platforms) before you get started.
 
 ## Issues and Contributions ##
 
-Issues can be reported to the [Issue tracker](https://github.com/gluonhq/client-gradle-plugin/issues)
+Issues can be reported to the [Issue tracker](https://github.com/gluonhq/gluonfx-gradle-plugin/issues)
 
-Contributions can be submitted via [Pull requests](https://github.com/gluonhq/client-gradle-plugin/pulls), 
-providing you have signed the [Gluon Individual Contributor License Agreement (CLA)](https://docs.google.com/forms/d/16aoFTmzs8lZTfiyrEm8YgMqMYaGQl0J8wA0VJE2LCCY).
+Contributions can be submitted via [Pull requests](https://github.com/gluonhq/gluonfx-gradle-plugin/pulls), 
+providing you have signed the [Gluon Individual Contributor License Agreement (CLA)](https://cla.gluonhq.com).

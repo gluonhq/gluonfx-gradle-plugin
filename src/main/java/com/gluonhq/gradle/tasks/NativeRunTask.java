@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, 2020, Gluon
+ * Copyright (c) 2019, 2021, Gluon
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,9 +36,9 @@ import org.gradle.api.tasks.TaskAction;
 
 import com.gluonhq.substrate.SubstrateDispatcher;
 
-public class ClientNativeRun extends ClientNativeBase {
+public class NativeRunTask extends NativeBaseTask {
     @Inject
-    public ClientNativeRun(Project project) {
+    public NativeRunTask(Project project) {
         super(project);
     }
 
