@@ -61,7 +61,7 @@ class ConfigBuild {
     }
 
     public SubstrateDispatcher createSubstrateDispatcher() throws IOException {
-        Path clientPath = project.getLayout().getBuildDirectory().dir(Constants.GLUONFX_PATH_PATH).get().getAsFile().toPath();
+        Path clientPath = project.getLayout().getBuildDirectory().dir(Constants.GLUONFX_PATH).get().getAsFile().toPath();
         project.getLogger().debug(" in directory {}", clientPath);
 
         return new SubstrateDispatcher(clientPath, createSubstrateConfiguration());
