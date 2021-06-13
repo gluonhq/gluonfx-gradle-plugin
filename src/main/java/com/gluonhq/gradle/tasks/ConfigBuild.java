@@ -61,7 +61,7 @@ class ConfigBuild {
     }
 
     public SubstrateDispatcher createSubstrateDispatcher() throws IOException {
-        Path clientPath = project.getLayout().getBuildDirectory().dir(Constants.CLIENT_PATH).get().getAsFile().toPath();
+        Path clientPath = project.getLayout().getBuildDirectory().dir(Constants.GLUONFX_PATH_PATH).get().getAsFile().toPath();
         project.getLogger().debug(" in directory {}", clientPath);
 
         return new SubstrateDispatcher(clientPath, createSubstrateConfiguration());
@@ -82,7 +82,7 @@ class ConfigBuild {
             }
             project.getLogger().debug("mainClassName = " + mainClassName + " and app name = " + name);
 
-            Path buildRootPath = project.getLayout().getBuildDirectory().dir("gluonfx").get().getAsFile().toPath();
+            Path buildRootPath = project.getLayout().getBuildDirectory().dir(Constants.GLUONFX_PATH).get().getAsFile().toPath();
             project.getLogger().debug("BuildRoot: " + buildRootPath);
             
             SubstrateDispatcher dispatcher = new SubstrateDispatcher(buildRootPath, clientConfig);
