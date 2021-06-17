@@ -7,7 +7,7 @@ plugins {
 }
 
 group 'com.gluonhq'
-version '1.0.1'
+version '1.0.2-SNAPSHOT'
 
 sourceCompatibility = 11
 targetCompatibility = 11
@@ -26,7 +26,7 @@ dependencies {
     implementation gradleApi()
 
     testImplementation gradleTestKit()
-    implementation 'com.gluonhq:substrate:0.0.41'
+    implementation 'com.gluonhq:substrate:0.0.42-SNAPSHOT'
     implementation 'org.openjfx:javafx-plugin:0.0.10'
 }
 
