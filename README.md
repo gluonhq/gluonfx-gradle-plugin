@@ -122,11 +122,13 @@ On iOS, this can be used to create an IPA, on Android it will create an APK.
 
 #### `nativeInstall`
 
-On mobile only, installs the generated package that was created after `nativePackage`.
+Installs the generated package or the binary that was created.
 
 Run:
 
     ./gradlew nativeInstall
+    
+Note: At the moment, this task is only intended for Android and Linux-AArch64.    
     
 ### Configuration
 
