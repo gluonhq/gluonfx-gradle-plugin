@@ -87,7 +87,7 @@ public class ClientExtension {
     private final List<String> compilerArgs;
 
     /**
-     * List of optional compiler arguments
+     * List of optional runtime arguments
      */
     private final List<String> runtimeArgs;
 

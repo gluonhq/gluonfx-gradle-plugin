@@ -59,6 +59,14 @@ You can run the regular tasks to build and run your project as a regular VM proj
 
 Once the project is ready, the plugin has these main tasks:    
 
+#### `nativeRunAgent`
+
+This task can be run to use a tracing agent and generate the required config files for native-image.
+
+Run:
+
+    ./gradlew nativeRunAgent
+
 #### `nativeCompile`
 
 This tasks does the AOT compilation. It is a very intensive and lengthy task (several minutes, depending on your project and CPU), 
@@ -98,7 +106,7 @@ Or run the three tasks combined:
 
 Or run directly the application from command line:
 
-    build/client/$hostPlatform/$AppName/$AppName    
+    build/gluonfx/$hostPlatform/$AppName/$AppName    
 
 It will create a distributable native application.
 
@@ -114,19 +122,66 @@ On iOS, this can be used to create an IPA, on Android it will create an APK.
 
 #### `nativeInstall`
 
-On mobile only, installs the generated package that was created after `nativePackage`.
+Installs the generated package or the binary.
 
 Run:
 
     ./gradlew nativeInstall
     
-#### `nativeRunAgent`
+Note: At the moment, this task is only intended for Android and Linux-AArch64.    
+    
+### Configuration
 
-This task can be run before all the above to use a tracing agent and generate the required config files for native-image.
+The plugin allows some configuration to modify the default settings:
 
-Run:
+```
+gluonfx {
+    target = "$target"
+    attachConfig {
+        version = "$version"
+        configuration = "implementation";
+        services "lifecycle", ...
+    }
 
-    ./gradlew nativeRunAgent
+    bundlesList = []
+    resourcesList = []
+    reflectionList = []
+    jniList = []
+
+    compilerArgs = []
+    runtimeArgs = []
+
+    javaStaticSdkVersion = ""
+    javafxStaticSdkVersion = ""
+    graalvmHome = ""
+
+    verbose = false
+    enableSwRendering = false
+
+    remoteHostName = ""
+    remoteDir = ""
+    
+    release {
+        // Android
+        appLabel = ""
+        versionCode = "1"
+        versionName = "1.0"
+        providedKeyStorePath = ""
+        providedKeyStorePassword = ""
+        providedKeyAlias = ""
+        providedKeyAliasPassword = ""
+        // iOS
+        bundleName = ""
+        bundleVersion = ""
+        bundleShortVersion = ""
+        providedSigningIdentity = ""
+        providedProvisioningProfile = ""
+        skipSigning = false
+    }
+}
+```
+
+Check the [maven counterpart section](https://docs.gluonhq.com/#_configuration) for more details.
 
 ### Requirements
 
