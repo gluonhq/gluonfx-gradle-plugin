@@ -122,7 +122,7 @@ On iOS, this can be used to create an IPA, on Android it will create an APK.
 
 #### `nativeInstall`
 
-Installs the generated package or the binary that was created.
+Installs the generated package or the binary.
 
 Run:
 
