@@ -135,7 +135,9 @@ public class AttachConfiguration {
             utilDependencyNotationMap.put("version", getVersion());
             if (Constants.PROFILE_ANDROID.equals(target) || Constants.PROFILE_IOS.equals(target)
                     || Constants.PROFILE_IOS_SIM.equals(target)) {
-                utilDependencyNotationMap.put("classifier", target);
+                String utilTarget = Constants.PROFILE_IOS_SIM.equals(target) ?
+                        Constants.PROFILE_IOS : target;
+                utilDependencyNotationMap.put("classifier", utilTarget);
             }
             project.getDependencies().add(configName, utilDependencyNotationMap);
         }
