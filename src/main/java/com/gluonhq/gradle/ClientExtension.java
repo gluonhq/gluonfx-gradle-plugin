@@ -132,7 +132,13 @@ public class ClientExtension {
      */
     private String remoteDir;
 
+    /**
+     * Sets a unique application identifier.
+     */
+    private String appIdentifier;
+
     private AttachConfiguration attachConfiguration;
+
     private ReleaseConfiguration releaseConfiguration;
 
     public ClientExtension(Project project, ObjectFactory objectFactory) {
@@ -264,6 +270,14 @@ public class ClientExtension {
 
     public String getRemoteDir() {
         return remoteDir;
+    }
+
+    public void setAppIdentifier(String appIdentifier) {
+        this.appIdentifier = appIdentifier;
+    }
+
+    public String getAppIdentifier() {
+        return appIdentifier;
     }
 
     public void attachConfig(Closure<?> configureClosure) {
