@@ -130,7 +130,9 @@ class ConfigBuild {
         clientConfig.setCompilerArgs(clientExtension.getCompilerArgs());
         clientConfig.setRuntimeArgs(clientExtension.getRuntimeArgs());
         clientConfig.setReflectionList(clientExtension.getReflectionList());
-        clientConfig.setAppId(project.getGroup() + "." + project.getName());
+        String appId = clientExtension.getAppIdentifier();
+        clientConfig.setAppId(appId != null ? appId :
+                project.getGroup() + "." + project.getName());
         clientConfig.setAppName(project.getName());
 
         clientConfig.setGraalPath(getGraalHome());
