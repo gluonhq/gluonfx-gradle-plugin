@@ -149,6 +149,7 @@ gluonfx {
     jniList = []
 
     compilerArgs = []
+    linkerArgs = []
     runtimeArgs = []
 
     javaStaticSdkVersion = ""

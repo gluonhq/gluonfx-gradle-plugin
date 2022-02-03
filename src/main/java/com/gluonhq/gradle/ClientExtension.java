@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, 2021, Gluon
+ * Copyright (c) 2019, 2022, Gluon
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -87,6 +87,11 @@ public class ClientExtension {
     private final List<String> compilerArgs;
 
     /**
+     * List of optional linker arguments
+     */
+    private final List<String> linkerArgs;
+
+    /**
      * List of optional runtime arguments
      */
     private final List<String> runtimeArgs;
@@ -148,6 +153,7 @@ public class ClientExtension {
         this.reflectionList = new ArrayList<>();
         this.jniList = new ArrayList<>();
         this.compilerArgs = new ArrayList<>();
+        this.linkerArgs = new ArrayList<>();
         this.runtimeArgs = new ArrayList<>();
 
         attachConfiguration = objectFactory.newInstance(AttachConfiguration.class, project);
@@ -229,6 +235,15 @@ public class ClientExtension {
 
     public List<String> getCompilerArgs() {
         return compilerArgs;
+    }
+
+    public void setLinkerArgs(List<String> linkerArgs) {
+        this.linkerArgs.clear();
+        this.linkerArgs.addAll(linkerArgs);
+    }
+
+    public List<String> getLinkerArgs() {
+        return linkerArgs;
     }
 
     public void setRuntimeArgs(List<String> compilerArgs) {
