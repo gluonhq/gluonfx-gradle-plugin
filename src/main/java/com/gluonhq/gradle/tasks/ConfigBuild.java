@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, 2021, Gluon
+ * Copyright (c) 2019, 2022, Gluon
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -128,6 +128,7 @@ class ConfigBuild {
         clientConfig.setResourcesList(clientExtension.getResourcesList());
         clientConfig.setJniList(clientExtension.getJniList());
         clientConfig.setCompilerArgs(clientExtension.getCompilerArgs());
+        clientConfig.setLinkerArgs(clientExtension.getLinkerArgs());
         clientConfig.setRuntimeArgs(clientExtension.getRuntimeArgs());
         clientConfig.setReflectionList(clientExtension.getReflectionList());
         String appId = clientExtension.getAppIdentifier();
