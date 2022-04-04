@@ -23,7 +23,7 @@ To use the plugin, apply the following steps:
 Using the `plugins` DSL, add:
 
     plugins {
-        id 'com.gluonhq.gluonfx-gradle-plugin' version '1.0.12'
+        id 'com.gluonhq.gluonfx-gradle-plugin' version '1.0.13'
     }
 
 This requires adding the plugin repository to the `settings.gradle` file:
@@ -44,7 +44,7 @@ Alternatively, you can use the `buildscript` DSL:
             }
         }
         dependencies {
-            classpath 'com.gluonhq:gluonfx-gradle-plugin:1.0.12'
+            classpath 'com.gluonhq:gluonfx-gradle-plugin:1.0.13'
         }
     }
     apply plugin: 'com.gluonhq.gluonfx-gradle-plugin'
