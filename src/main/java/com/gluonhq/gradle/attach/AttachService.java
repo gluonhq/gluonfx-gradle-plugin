@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, 2020, Gluon
+ * Copyright (c) 2019, 2022, Gluon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,6 +65,7 @@ public enum AttachService {
     SHARE,
     STATUSBAR,
     STORAGE(true /* desktopSupported */),
+    STORE_REVIEW,
     VERSION(true /* desktopSupported */),
     VIBRATION,
     VIDEO;
