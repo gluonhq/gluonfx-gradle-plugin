@@ -50,10 +50,8 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.TreeSet;
 
 public class NativeRunAgentTask extends NativeBaseTask {
 
@@ -118,39 +116,7 @@ public class NativeRunAgentTask extends NativeBaseTask {
                 throw new GradleException("Run task not found.");
             }
 
-            JavaFXOptions javaFXOptions = project.getExtensions().getByType(JavaFXOptions.class);
-            var definedJavaFXModuleNames = new TreeSet<>(javaFXOptions.getModules());
-            if (definedJavaFXModuleNames.isEmpty()) {
-                throw new GradleException("No JavaFX modules found.");
-            }
-            final FileCollection classpathWithoutJavaFXJars = execTask.getClasspath().filter(
-                    jar -> Arrays.stream(JavaFXModule.values()).noneMatch(javaFXModule ->
-                            jar.getName().contains(javaFXModule.getArtifactName()))
-            );
-            final FileCollection javaFXPlatformJars = execTask.getClasspath().filter(jar ->
-                    isJavaFXJar(jar, javaFXOptions.getPlatform()));
-
-            // Remove all JavaFX jars from classpath
-            execTask.setClasspath(classpathWithoutJavaFXJars);
-
-            // Define JVM args for command line
-            var javaFXModuleJvmArgs = List.of("--module-path", javaFXPlatformJars.getAsPath());
-            var jvmArgs = new ArrayList<>(javaFXModuleJvmArgs);
-            jvmArgs.add("--add-modules");
-            jvmArgs.add(String.join(",", definedJavaFXModuleNames));
-            if (GradleVersion.current().compareTo(GradleVersion.version("6.6")) < 0) {
-                // Include classpath as JVM arg for Gradle versions lower than 6.6
-                jvmArgs.add("-cp");
-                jvmArgs.add(classpathWithoutJavaFXJars.getAsPath());
-            }
-
-            // set java_home
-            execTask.executable(Path.of(graalVMHome.toString(), "bin", "java").toString());
-
-            // set jvmargs
             execTask.getJvmArgs().add(AGENTLIB_NATIVE_IMAGE_AGENT_STRING);
-            execTask.getJvmArgs().addAll(jvmArgs);
-
             // run
             execTask.exec();
         } catch (Exception e) {
