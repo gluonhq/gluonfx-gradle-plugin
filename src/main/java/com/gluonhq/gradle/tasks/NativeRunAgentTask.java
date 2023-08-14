@@ -134,8 +134,11 @@ public class NativeRunAgentTask extends NativeBaseTask {
             execTask.setClasspath(classpathWithoutJavaFXJars);
 
             // Define JVM args for command line
-            var javaFXModuleJvmArgs = List.of("--module-path", javaFXPlatformJars.getAsPath());
-            var jvmArgs = new ArrayList<>(javaFXModuleJvmArgs);
+            var jvmArgs = new ArrayList<String>();
+            if (!javaFXPlatformJars.isEmpty()) {
+                var javaFXModuleJvmArgs = List.of("--module-path", javaFXPlatformJars.getAsPath());
+                jvmArgs.addAll(javaFXModuleJvmArgs);
+            }
             jvmArgs.add("--add-modules");
             jvmArgs.add(String.join(",", definedJavaFXModuleNames));
             if (GradleVersion.current().compareTo(GradleVersion.version("6.6")) < 0) {
