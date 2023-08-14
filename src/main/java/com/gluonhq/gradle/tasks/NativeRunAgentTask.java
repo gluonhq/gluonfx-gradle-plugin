@@ -148,8 +148,8 @@ public class NativeRunAgentTask extends NativeBaseTask {
             execTask.executable(Path.of(graalVMHome.toString(), "bin", "java").toString());
 
             // set jvmargs
-            execTask.getJvmArgs().add(AGENTLIB_NATIVE_IMAGE_AGENT_STRING);
-            execTask.getJvmArgs().addAll(jvmArgs);
+            execTask.jvmArgs(AGENTLIB_NATIVE_IMAGE_AGENT_STRING);
+            execTask.jvmArgs(jvmArgs);
 
             // run
             execTask.exec();
