@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2018, 2021, Gluon Software
+ * Copyright (c) 2018, 2023, Gluon Software
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,6 +44,7 @@ import org.gradle.api.artifacts.Configuration;
 
 import com.gluonhq.gradle.ClientExtension;
 import com.gluonhq.substrate.Constants;
+import org.gradle.api.artifacts.ModuleDependency;
 
 public class AttachConfiguration {
     private static final String DEPENDENCY_GROUP = "com.gluonhq.attach";
@@ -126,7 +127,12 @@ public class AttachConfiguration {
         if (services != null && !services.isEmpty()) {
             services.stream()
                 .map(asd -> generateDependencyNotation(asd, target))
-                .forEach(depNotion -> project.getDependencies().add(configName, depNotion));
+                .forEach(depNotion -> {
+                    ModuleDependency dep = (ModuleDependency) project.getDependencies().add(configName, depNotion);
+                    if (dep != null) {
+                        dep.exclude(Map.of("group", "org.openjfx", "module", "*"));
+                    }
+                });
 
             // Also add util artifact if any other artifact added
             Map<String, String> utilDependencyNotationMap = new HashMap<>();
@@ -139,7 +145,10 @@ public class AttachConfiguration {
                         Constants.PROFILE_IOS : target;
                 utilDependencyNotationMap.put("classifier", utilTarget);
             }
-            project.getDependencies().add(configName, utilDependencyNotationMap);
+            ModuleDependency dep = (ModuleDependency) project.getDependencies().add(configName, utilDependencyNotationMap);
+            if (dep != null) {
+                dep.exclude(Map.of("group", "org.openjfx", "module", "*"));
+            }
         }
 
         lastAppliedConfiguration = configuration;
