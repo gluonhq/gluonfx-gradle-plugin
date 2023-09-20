@@ -48,8 +48,10 @@ publishing {
             def sonatypeUsername = providers.gradleProperty('sonatypeUsername')
             def sonatypePassword = providers.gradleProperty('sonatypePassword')
             if (sonatypeUsername.isPresent() && sonatypePassword.isPresent()) {
-                username = sonatypeUsername.get()
-                password = sonatypePassword.get()
+                credentials {
+                    username = sonatypeUsername.get()
+                    password = sonatypePassword.get()
+                }
             }
         }
     }
