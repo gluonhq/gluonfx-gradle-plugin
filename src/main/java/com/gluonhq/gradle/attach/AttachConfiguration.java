@@ -134,8 +134,6 @@ public class AttachConfiguration {
                     }
                 });
 
-
-
             // Also add util artifact if any other artifact added
             Map<String, String> utilDependencyNotationMap = new HashMap<>();
             utilDependencyNotationMap.put("group", DEPENDENCY_GROUP);
