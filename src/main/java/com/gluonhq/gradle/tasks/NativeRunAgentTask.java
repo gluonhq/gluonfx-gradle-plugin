@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, 2023, Gluon
+ * Copyright (c) 2021, 2024, Gluon
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,6 +48,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 public class NativeRunAgentTask extends NativeBaseTask {
 
@@ -105,7 +106,8 @@ public class NativeRunAgentTask extends NativeBaseTask {
             }
 
             // set java_home
-            execTask.executable(Path.of(graalVMHome.toString(), "bin", "java").toString());
+            String binary = System.getProperty("os.name").toLowerCase(Locale.ROOT).contains("windows") ? "java.exe" : "java";
+            execTask.executable(Path.of(graalVMHome.toString(), "bin", binary).toString());
 
             // set jvmargs
             var jvmArgs = List.of(AGENTLIB_NATIVE_IMAGE_AGENT_STRING);
