@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, 2022, Gluon
+ * Copyright (c) 2019, 2024, Gluon
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -108,7 +108,7 @@ class ConfigBuild {
             mainClass.set(javaApp.getMainClass().getOrNull());
         });
         // Fallback to deprecated mainClassName
-        if (!mainClass.isPresent()){
+        if (!mainClass.isPresent()) {
             mainClass.set((String) project.getProperties().get("mainClassName"));
         }
 
