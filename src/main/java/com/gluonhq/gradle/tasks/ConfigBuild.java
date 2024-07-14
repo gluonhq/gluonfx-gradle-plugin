@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, 2022, Gluon
+ * Copyright (c) 2019, 2024, Gluon
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,7 +32,7 @@ package com.gluonhq.gradle.tasks;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
@@ -40,6 +40,10 @@ import java.util.stream.Collectors;
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.DependencySet;
+import org.gradle.api.plugins.ApplicationPlugin;
+import org.gradle.api.plugins.JavaApplication;
+import org.gradle.api.plugins.JavaPlugin;
+import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
 
@@ -84,7 +88,7 @@ class ConfigBuild {
 
             Path buildRootPath = project.getLayout().getBuildDirectory().dir(Constants.GLUONFX_PATH).get().getAsFile().toPath();
             project.getLogger().debug("BuildRoot: " + buildRootPath);
-            
+
             SubstrateDispatcher dispatcher = new SubstrateDispatcher(buildRootPath, clientConfig);
             result = dispatcher.nativeCompile();
         } catch (Exception e) {
@@ -97,7 +101,19 @@ class ConfigBuild {
     }
 
     private ProjectConfiguration createSubstrateConfiguration() {
-        ProjectConfiguration clientConfig = new ProjectConfiguration((String) project.getProperties().get("mainClassName"), getClassPath());
+        // Use Application Plugin First to get mainClass
+        Property<String> mainClass = project.getObjects().property(String.class);
+        project.getPlugins().withType(ApplicationPlugin.class, applicationPlugin -> {
+            JavaApplication javaApp = project.getExtensions().getByType(JavaApplication.class);
+            mainClass.set(javaApp.getMainClass().getOrNull());
+        });
+        // Fallback to deprecated mainClassName
+        if (!mainClass.isPresent()) {
+            mainClass.set((String) project.getProperties().get("mainClassName"));
+        }
+
+        // Init Client Config
+        ProjectConfiguration clientConfig = new ProjectConfiguration(mainClass.getOrNull(), getClassPath());
         clientConfig.setJavaStaticSdkVersion(clientExtension.getJavaStaticSdkVersion());
         clientConfig.setJavafxStaticSdkVersion(clientExtension.getJavafxStaticSdkVersion());
 
@@ -159,14 +175,15 @@ class ConfigBuild {
     }
 
     private List<Path> getClassPathFromSourceSets() {
-        List<Path> classPath = Collections.emptyList();
-        SourceSetContainer sourceSetContainer = (SourceSetContainer) project.getProperties().get("sourceSets");
-        SourceSet mainSourceSet = sourceSetContainer.findByName("main");
-        if (mainSourceSet != null) {
-            classPath = mainSourceSet.getRuntimeClasspath().getFiles().stream()
+        final List<Path> classPath = new ArrayList<>();
+        project.getPlugins().withType(JavaPlugin.class, javaPlugin -> {
+            SourceSetContainer sourceSetContainer = project.getExtensions().getByType(SourceSetContainer.class);
+            SourceSet mainSourceSet = sourceSetContainer.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
+            mainSourceSet.getRuntimeClasspath().getFiles().stream()
                     .filter(File::exists)
-                    .map(File::toPath).collect(Collectors.toList());
-        }
+                    .map(File::toPath)
+                    .forEachOrdered(classPath::add);
+        });
         return classPath;
     }
 
