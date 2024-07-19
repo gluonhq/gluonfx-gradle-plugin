@@ -5,7 +5,7 @@ plugins {
 }
 
 group 'com.gluonhq'
-version '1.0.23-SNAPSHOT'
+version '1.0.23'
 
 java {
     toolchain.languageVersion = JavaLanguageVersion.of(11)
