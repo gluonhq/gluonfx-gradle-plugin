@@ -38,7 +38,7 @@ jobs:
           bash $GITHUB_WORKSPACE/.github/scripts/update-next-development.sh "$TAG"
         shell: bash
         env:
-          GITHUB_PASSWORD: ${{ secrets.PAT }}
+          GITHUB_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
             
       - name: Update ide-plugin properties
         if: steps.deploy.outputs.exit_code == 0
