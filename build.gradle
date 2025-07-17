@@ -23,7 +23,7 @@ dependencies {
     implementation gradleApi()
 
     testImplementation gradleTestKit()
-    implementation 'com.gluonhq:substrate:0.0.67-SNAPSHOT'
+    implementation 'com.gluonhq:substrate:0.0.67'
     implementation 'org.openjfx:javafx-plugin:0.1.0'
 }
 
