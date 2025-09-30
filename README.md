@@ -194,3 +194,4 @@ Issues can be reported to the [Issue tracker](https://github.com/gluonhq/gluonfx
 
 Contributions can be submitted via [Pull requests](https://github.com/gluonhq/gluonfx-gradle-plugin/pulls), 
 providing you have signed the [Gluon Individual Contributor License Agreement (CLA)](https://cla.gluonhq.com).
+
