@@ -5,7 +5,7 @@ plugins {
 }
 
 group 'com.gluonhq'
-version '1.0.28'
+version '1.0.29-SNAPSHOT'
 
 java {
     toolchain.languageVersion = JavaLanguageVersion.of(11)
@@ -23,7 +23,7 @@ dependencies {
     implementation gradleApi()
 
     testImplementation gradleTestKit()
-    implementation 'com.gluonhq:substrate:0.0.68'
+    implementation 'com.gluonhq:substrate:0.0.69-SNAPSHOT'
     implementation 'org.openjfx:javafx-plugin:0.1.0'
 }
 
