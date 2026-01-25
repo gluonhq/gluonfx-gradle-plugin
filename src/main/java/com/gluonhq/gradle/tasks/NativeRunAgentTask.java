@@ -50,6 +50,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
+import org.gradle.api.tasks.Internal;
+import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.options.Option;
+
 public class NativeRunAgentTask extends NativeBaseTask {
 
     private static final String AGENTLIB_NATIVE_IMAGE_AGENT_STRING =
@@ -64,10 +68,22 @@ public class NativeRunAgentTask extends NativeBaseTask {
 
     private final ClientExtension clientExtension;
 
+    private List<String> applicationArgs = new ArrayList<>();
+
     @Inject
     public NativeRunAgentTask(Project project) {
         super(project);
         clientExtension = project.getExtensions().getByType(ClientExtension.class);
+    }
+
+    @Option(option = "args", description = "Arguments to pass to the application")
+    public void setApplicationArgs(List<String> args) {
+        this.applicationArgs = args;
+    }
+
+    @Internal
+    public List<String> getApplicationArgs() {
+        return applicationArgs;
     }
 
     @TaskAction
@@ -112,6 +128,11 @@ public class NativeRunAgentTask extends NativeBaseTask {
             // set jvmargs
             var jvmArgs = List.of(AGENTLIB_NATIVE_IMAGE_AGENT_STRING);
             execTask.getJvmArgumentProviders().add(() -> jvmArgs);
+
+            // set application args
+            if (applicationArgs != null && !applicationArgs.isEmpty()) {
+                execTask.args(applicationArgs);
+            }
 
             // run
             execTask.exec();

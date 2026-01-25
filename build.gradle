@@ -17,6 +17,7 @@ repositories {
     maven {
         url "https://central.sonatype.com/repository/maven-snapshots/"
     }
+    mavenLocal()
 }
 
 dependencies {
@@ -36,7 +37,7 @@ gradlePlugin {
             implementationClass = 'com.gluonhq.gradle.GluonFXPlugin'
             website = 'https://github.com/gluonhq/gluonfx-gradle-plugin'
             vcsUrl = 'https://github.com/gluonhq/gluonfx-gradle-plugin'
-            tags.set([ 'java', 'javafx', 'gluon', 'client', 'substrate', 'graalvm', 'aot' ])
+            tags.set(['java', 'javafx', 'gluon', 'client', 'substrate', 'graalvm', 'aot'])
         }
     }
 }
