@@ -51,7 +51,6 @@ import java.util.List;
 import java.util.Locale;
 
 import org.gradle.api.tasks.Internal;
-import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.options.Option;
 
 public class NativeRunAgentTask extends NativeBaseTask {
