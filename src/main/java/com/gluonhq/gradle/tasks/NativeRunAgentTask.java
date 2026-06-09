@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, 2024, Gluon
+ * Copyright (c) 2021, 2026, Gluon
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,8 +32,8 @@ package com.gluonhq.gradle.tasks;
 import com.gluonhq.gradle.ClientExtension;
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
-import org.gradle.api.Task;
 import org.gradle.api.plugins.ApplicationPlugin;
+import org.gradle.api.tasks.CacheableTask;
 import org.gradle.api.tasks.JavaExec;
 import org.gradle.api.tasks.TaskAction;
 
@@ -45,11 +45,11 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
+@CacheableTask
 public class NativeRunAgentTask extends NativeBaseTask {
 
     private static final String AGENTLIB_NATIVE_IMAGE_AGENT_STRING =

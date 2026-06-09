@@ -14,11 +14,11 @@ jobs:
           fetch-depth: 5
           persist-credentials: false
 
-      - name: Setup Java 11 and Apache Maven
+      - name: Setup Java 17 and Apache Maven
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: 11
+          java-version: 17
 
       - name: Configure GIT
         run: |
