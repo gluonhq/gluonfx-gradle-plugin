@@ -34,8 +34,10 @@ import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.ApplicationPlugin;
 import org.gradle.api.tasks.CacheableTask;
+import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.JavaExec;
 import org.gradle.api.tasks.TaskAction;
+import org.gradle.api.tasks.options.Option;
 
 import javax.inject.Inject;
 import java.io.BufferedWriter;
@@ -64,10 +66,22 @@ public class NativeRunAgentTask extends NativeBaseTask {
 
     private final ClientExtension clientExtension;
 
+    private String applicationArgs = "";
+
     @Inject
     public NativeRunAgentTask(Project project) {
         super(project);
         clientExtension = project.getExtensions().getByType(ClientExtension.class);
+    }
+
+    @Option(option = "args", description = "Arguments to pass to the application")
+    public void setApplicationArgs(String args) {
+        this.applicationArgs = args;
+    }
+
+    @Input
+    public String getApplicationArgs() {
+        return applicationArgs;
     }
 
     @TaskAction
@@ -112,6 +126,11 @@ public class NativeRunAgentTask extends NativeBaseTask {
             // set jvmargs
             var jvmArgs = List.of(AGENTLIB_NATIVE_IMAGE_AGENT_STRING);
             execTask.getJvmArgumentProviders().add(() -> jvmArgs);
+
+            // set application args
+            if (applicationArgs != null && !applicationArgs.isBlank()) {
+                execTask.setArgsString(applicationArgs);
+            }
 
             // run
             execTask.exec();
