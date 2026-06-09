@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, 2021, Gluon
+ * Copyright (c) 2019, 2026, Gluon
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,10 +33,12 @@ import javax.inject.Inject;
 
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
+import org.gradle.api.tasks.CacheableTask;
 import org.gradle.api.tasks.TaskAction;
 
 import com.gluonhq.substrate.SubstrateDispatcher;
 
+@CacheableTask
 public class NativeInstallTask extends NativeBaseTask {
     @Inject
     public NativeInstallTask(Project project) {

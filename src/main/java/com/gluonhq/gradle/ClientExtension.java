@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, 2022, Gluon
+ * Copyright (c) 2019, 2026, Gluon
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,13 +32,11 @@ package com.gluonhq.gradle;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.gradle.api.Action;
 import org.gradle.api.Project;
 import org.gradle.api.model.ObjectFactory;
-import org.gradle.util.ConfigureUtil;
 
 import com.gluonhq.gradle.attach.AttachConfiguration;
-
-import groovy.lang.Closure;
 
 public class ClientExtension {
 
@@ -142,9 +140,9 @@ public class ClientExtension {
      */
     private String appIdentifier;
 
-    private AttachConfiguration attachConfiguration;
+    private final AttachConfiguration attachConfiguration;
 
-    private ReleaseConfiguration releaseConfiguration;
+    private final ReleaseConfiguration releaseConfiguration;
 
     public ClientExtension(Project project, ObjectFactory objectFactory) {
         this.target = DEFAULT_TARGET;
@@ -295,16 +293,16 @@ public class ClientExtension {
         return appIdentifier;
     }
 
-    public void attachConfig(Closure<?> configureClosure) {
-        ConfigureUtil.configure(configureClosure, attachConfiguration);
+    public void attachConfig(Action<? super AttachConfiguration> action) {
+        action.execute(attachConfiguration);
     }
 
     public AttachConfiguration getAttachConfig() {
         return attachConfiguration;
     }
 
-    public void release(Closure<?> configureClosure) {
-        ConfigureUtil.configure(configureClosure, releaseConfiguration);
+    public void release(Action<? super ReleaseConfiguration> action) {
+        action.execute(releaseConfiguration);
     }
 
     public ReleaseConfiguration getReleaseConfiguration() {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, 2024, Gluon
+ * Copyright (c) 2021, 2026, Gluon
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,10 +32,12 @@ package com.gluonhq.gradle.tasks;
 import com.gluonhq.gradle.ClientExtension;
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
-import org.gradle.api.Task;
 import org.gradle.api.plugins.ApplicationPlugin;
+import org.gradle.api.tasks.CacheableTask;
+import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.JavaExec;
 import org.gradle.api.tasks.TaskAction;
+import org.gradle.api.tasks.options.Option;
 
 import javax.inject.Inject;
 import java.io.BufferedWriter;
@@ -45,14 +47,11 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-import org.gradle.api.tasks.Internal;
-import org.gradle.api.tasks.options.Option;
-
+@CacheableTask
 public class NativeRunAgentTask extends NativeBaseTask {
 
     private static final String AGENTLIB_NATIVE_IMAGE_AGENT_STRING =
@@ -67,7 +66,7 @@ public class NativeRunAgentTask extends NativeBaseTask {
 
     private final ClientExtension clientExtension;
 
-    private List<String> applicationArgs = new ArrayList<>();
+    private String applicationArgs = "";
 
     @Inject
     public NativeRunAgentTask(Project project) {
@@ -76,12 +75,12 @@ public class NativeRunAgentTask extends NativeBaseTask {
     }
 
     @Option(option = "args", description = "Arguments to pass to the application")
-    public void setApplicationArgs(List<String> args) {
+    public void setApplicationArgs(String args) {
         this.applicationArgs = args;
     }
 
-    @Internal
-    public List<String> getApplicationArgs() {
+    @Input
+    public String getApplicationArgs() {
         return applicationArgs;
     }
 
@@ -129,8 +128,8 @@ public class NativeRunAgentTask extends NativeBaseTask {
             execTask.getJvmArgumentProviders().add(() -> jvmArgs);
 
             // set application args
-            if (applicationArgs != null && !applicationArgs.isEmpty()) {
-                execTask.args(applicationArgs);
+            if (applicationArgs != null && !applicationArgs.isBlank()) {
+                execTask.setArgsString(applicationArgs);
             }
 
             // run
