@@ -86,7 +86,7 @@ public class NativeRunAgentTask extends NativeBaseTask {
 
     @TaskAction
     public void action() {
-        getProject().getLogger().info("ClientNativeRunAgent action");
+        getLogger().info("ClientNativeRunAgent action");
 
         Path graalVMHome = getGraalHome();
 

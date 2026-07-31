@@ -81,8 +81,9 @@ public class GluonFXPlugin implements Plugin<Project> {
     }
     
     private void createTask(String name, Class<? extends Task> taskClass, String description) {
-        Task t = project.getTasks().create(name, taskClass, project);
-        t.setGroup("GluonFX");
-        t.setDescription(description);
+        project.getTasks().register(name, taskClass, project).configure(t -> {
+            t.setGroup("GluonFX");
+            t.setDescription(description);
+        });
     }
 }

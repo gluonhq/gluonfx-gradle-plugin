@@ -47,7 +47,7 @@ public class NativeLinkTask extends NativeBaseTask {
 
     @TaskAction
     public void action() {
-        getProject().getLogger().info("ClientNativeLink action");
+        getLogger().info("ClientNativeLink action");
 
         boolean result;
         try {

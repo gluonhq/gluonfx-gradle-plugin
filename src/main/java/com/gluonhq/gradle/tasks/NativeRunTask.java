@@ -46,7 +46,7 @@ public class NativeRunTask extends NativeBaseTask {
 
     @TaskAction
     public void action() {
-        getProject().getLogger().info("ClientNativeRun action");
+        getLogger().info("ClientNativeRun action");
 
         try {
             SubstrateDispatcher dispatcher = new ConfigBuild(project).createSubstrateDispatcher();

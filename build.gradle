@@ -4,8 +4,8 @@ plugins {
     id 'com.github.hierynomus.license' version '0.16.1'
 }
 
-group 'com.gluonhq'
-version '1.0.30-SNAPSHOT'
+group = 'com.gluonhq'
+version = '1.0.30-SNAPSHOT'
 
 java {
     toolchain.languageVersion = JavaLanguageVersion.of(17)
@@ -15,7 +15,7 @@ repositories {
     mavenCentral()
     gradlePluginPortal()
     maven {
-        url "https://central.sonatype.com/repository/maven-snapshots/"
+        url = "https://central.sonatype.com/repository/maven-snapshots/"
     }
 }
 

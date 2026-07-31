@@ -47,7 +47,7 @@ public class NativePackageTask extends NativeBaseTask {
 
     @TaskAction
     public void action() {
-        getProject().getLogger().info("ClientNativePackage action");
+        getLogger().info("ClientNativePackage action");
 
         boolean result;
         try {

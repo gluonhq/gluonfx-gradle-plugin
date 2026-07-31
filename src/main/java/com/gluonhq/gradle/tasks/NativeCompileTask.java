@@ -45,7 +45,7 @@ public class NativeCompileTask extends NativeBaseTask {
 
     @TaskAction
     public void action() {
-        getProject().getLogger().debug("ClientNativeCompile action");
+        getLogger().debug("ClientNativeCompile action");
         new ConfigBuild(project).build();
     }
 }

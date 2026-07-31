@@ -32,7 +32,6 @@
 package com.gluonhq.gradle.attach;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -44,6 +43,7 @@ import org.gradle.api.artifacts.Configuration;
 
 import com.gluonhq.gradle.ClientExtension;
 import com.gluonhq.substrate.Constants;
+import org.gradle.api.artifacts.ExternalModuleDependency;
 import org.gradle.api.artifacts.ModuleDependency;
 
 public class AttachConfiguration {
@@ -61,7 +61,7 @@ public class AttachConfiguration {
     @Inject
     public AttachConfiguration(Project project) {
         this.project = project;
-        this.services = project.container(AttachServiceDefinition.class);
+        this.services = project.getObjects().domainObjectContainer(AttachServiceDefinition.class);
     }
 
     public void version(String version) {
@@ -125,27 +125,21 @@ public class AttachConfiguration {
 
         project.getLogger().info("Adding Attach dependencies for target: " + target);
         if (services != null && !services.isEmpty()) {
-            services.stream()
-                .map(asd -> generateDependencyNotation(asd, target))
-                .forEach(depNotion -> {
-                    ModuleDependency dep = (ModuleDependency) project.getDependencies().add(configName, depNotion);
-                    if (dep != null) {
-                        dep.exclude(Map.of("group", "org.openjfx", "module", "*"));
-                    }
-                });
+            services.forEach(asd -> {
+                ModuleDependency dep = generateDependency(asd, target, configName);
+                if (dep != null) {
+                    dep.exclude(Map.of("group", "org.openjfx", "module", "*"));
+                }
+            });
 
             // Also add util artifact if any other artifact added
-            Map<String, String> utilDependencyNotationMap = new HashMap<>();
-            utilDependencyNotationMap.put("group", DEPENDENCY_GROUP);
-            utilDependencyNotationMap.put("name", UTIL_ARTIFACT);
-            utilDependencyNotationMap.put("version", getVersion());
+            String utilClassifier = null;
             if (Constants.PROFILE_ANDROID.equals(target) || Constants.PROFILE_IOS.equals(target)
                     || Constants.PROFILE_IOS_SIM.equals(target)) {
-                String utilTarget = Constants.PROFILE_IOS_SIM.equals(target) ?
+                utilClassifier = Constants.PROFILE_IOS_SIM.equals(target) ?
                         Constants.PROFILE_IOS : target;
-                utilDependencyNotationMap.put("classifier", utilTarget);
             }
-            ModuleDependency dep = (ModuleDependency) project.getDependencies().add(configName, utilDependencyNotationMap);
+            ModuleDependency dep = createDependency(UTIL_ARTIFACT, utilClassifier, configName);
             if (dep != null) {
                 dep.exclude(Map.of("group", "org.openjfx", "module", "*"));
             }
@@ -154,14 +148,34 @@ public class AttachConfiguration {
         lastAppliedConfiguration = configuration;
     }
 
-    private Map<String, String> generateDependencyNotation(AttachServiceDefinition asd, String target) {
-        Map<String, String> dependencyNotationMap = new HashMap<>();
-        dependencyNotationMap.put("group", DEPENDENCY_GROUP);
-        dependencyNotationMap.put("name", asd.getName());
-        dependencyNotationMap.put("version", getVersion());
-        dependencyNotationMap.put("classifier", asd.getSupportedPlatform(target));
+    private ModuleDependency generateDependency(AttachServiceDefinition asd, String target, String configName) {
+        ModuleDependency dep = createDependency(asd.getName(), asd.getSupportedPlatform(target), configName);
 
-        project.getLogger().info("Adding dependency for {} in configuration {}: {}", asd.getService().getServiceName(), getConfiguration(), dependencyNotationMap);
-        return dependencyNotationMap;
+        project.getLogger().info("Adding dependency for {} in configuration {}: {}:{}:{}:{}", asd.getService().getServiceName(), getConfiguration(),
+                DEPENDENCY_GROUP, asd.getName(), getVersion(), asd.getSupportedPlatform(target));
+
+        return dep;
+    }
+
+    /**
+     * Creates and adds a dependency on "group:name:version" (Gradle's non-deprecated single-string
+     * notation) and, when a classifier is given, attaches it via the equally non-deprecated
+     * {@link ModuleDependency#artifact(Action)} API rather than embedding it in the coordinate
+     * string — this mirrors exactly what the old Map-based ("classifier" key) notation did
+     * internally, since embedding the classifier in the coordinate string altered dependency
+     * resolution in a way that broke native-image compilation for consumers.
+     */
+    private ModuleDependency createDependency(String name, String classifier, String configName) {
+        ExternalModuleDependency dep = (ExternalModuleDependency) project.getDependencies()
+                .create(DEPENDENCY_GROUP + ":" + name + ":" + getVersion());
+        if (classifier != null) {
+            dep.artifact(artifact -> {
+                artifact.setName(name);
+                artifact.setType("jar");
+                artifact.setExtension("jar");
+                artifact.setClassifier(classifier);
+            });
+        }
+        return (ModuleDependency) project.getDependencies().add(configName, dep);
     }
 }

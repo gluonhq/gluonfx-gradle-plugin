@@ -46,6 +46,6 @@ public class NativeBuildTask extends DefaultTask {
 
     @TaskAction
     public void action() {
-        getProject().getLogger().info("ClientNativeBuild action");
+        getLogger().info("ClientNativeBuild action");
     }
 }

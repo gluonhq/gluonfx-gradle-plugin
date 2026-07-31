@@ -47,7 +47,7 @@ public class NativeInstallTask extends NativeBaseTask {
 
     @TaskAction
     public void action() {
-        getProject().getLogger().info("ClientNativeInstall action");
+        getLogger().info("ClientNativeInstall action");
 
         boolean result;
         try {
