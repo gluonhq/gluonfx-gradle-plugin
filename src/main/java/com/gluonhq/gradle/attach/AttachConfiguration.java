@@ -125,11 +125,11 @@ public class AttachConfiguration {
         project.getLogger().info("Adding Attach dependencies for target: " + target);
         if (services != null && !services.isEmpty()) {
             services.stream()
-                .(asd -> generateDependencyNotation(asd, target))
+                .map(asd -> generateDependencyNotation(asd, target))
                 .forEach(depNotion -> {
                     ModuleDependency dep = (ModuleDependency) project.getDependencies().add(configName, depNotion);
                     if (dep != null) {
-                        dep.exclude(.of("group", "org.openjfx", "module", "*"));
+                        dep.exclude(Map.of("group", "org.openjfx", "module", "*"));
                     }
                 });
 
@@ -143,7 +143,7 @@ public class AttachConfiguration {
             }
             ModuleDependency dep = (ModuleDependency) project.getDependencies().add(configName, utilDependencyNotation);
             if (dep != null) {
-                dep.exclude(.of("group", "org.openjfx", "module", "*"));
+                dep.exclude(Map.of("group", "org.openjfx", "module", "*"));
             }
         }
 
