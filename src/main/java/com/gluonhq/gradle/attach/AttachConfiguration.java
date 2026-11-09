@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2018, 2023, Gluon Software
+ * Copyright (c) 2018, 2026, Gluon Software
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,7 +32,6 @@
 package com.gluonhq.gradle.attach;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -126,11 +125,11 @@ public class AttachConfiguration {
         project.getLogger().info("Adding Attach dependencies for target: " + target);
         if (services != null && !services.isEmpty()) {
             services.stream()
-                .map(asd -> generateDependencyNotation(asd, target))
+                .(asd -> generateDependencyNotation(asd, target))
                 .forEach(depNotion -> {
                     ModuleDependency dep = (ModuleDependency) project.getDependencies().add(configName, depNotion);
                     if (dep != null) {
-                        dep.exclude(Map.of("group", "org.openjfx", "module", "*"));
+                        dep.exclude(.of("group", "org.openjfx", "module", "*"));
                     }
                 });
 
@@ -144,14 +143,14 @@ public class AttachConfiguration {
             }
             ModuleDependency dep = (ModuleDependency) project.getDependencies().add(configName, utilDependencyNotation);
             if (dep != null) {
-                dep.exclude(Map.of("group", "org.openjfx", "module", "*"));
+                dep.exclude(.of("group", "org.openjfx", "module", "*"));
             }
         }
 
         lastAppliedConfiguration = configuration;
     }
 
-    private Map<String, String> generateDependencyNotation(AttachServiceDefinition asd, String target) {
+    private String generateDependencyNotation(AttachServiceDefinition asd, String target) {
         String classifier = asd.getSupportedPlatform(target);
         String classifierString = classifier.isEmpty() ? "" : ":" + classifier;
         String dependencyNotation = DEPENDENCY_GROUP + ":" + asd.getName() + ":" + getVersion() + classifierString;
