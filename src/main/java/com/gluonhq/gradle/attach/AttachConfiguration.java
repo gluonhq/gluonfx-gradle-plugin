@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  *
- * Copyright (c) 2018, 2023, Gluon Software
+ * Copyright (c) 2018, 2026, Gluon Software
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,7 +32,6 @@
 package com.gluonhq.gradle.attach;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -135,17 +134,14 @@ public class AttachConfiguration {
                 });
 
             // Also add util artifact if any other artifact added
-            Map<String, String> utilDependencyNotationMap = new HashMap<>();
-            utilDependencyNotationMap.put("group", DEPENDENCY_GROUP);
-            utilDependencyNotationMap.put("name", UTIL_ARTIFACT);
-            utilDependencyNotationMap.put("version", getVersion());
+            String utilDependencyNotation = DEPENDENCY_GROUP + ":" + UTIL_ARTIFACT + ":" + getVersion();
             if (Constants.PROFILE_ANDROID.equals(target) || Constants.PROFILE_IOS.equals(target)
                     || Constants.PROFILE_IOS_SIM.equals(target)) {
                 String utilTarget = Constants.PROFILE_IOS_SIM.equals(target) ?
                         Constants.PROFILE_IOS : target;
-                utilDependencyNotationMap.put("classifier", utilTarget);
+                utilDependencyNotation += ":" + utilTarget;
             }
-            ModuleDependency dep = (ModuleDependency) project.getDependencies().add(configName, utilDependencyNotationMap);
+            ModuleDependency dep = (ModuleDependency) project.getDependencies().add(configName, utilDependencyNotation);
             if (dep != null) {
                 dep.exclude(Map.of("group", "org.openjfx", "module", "*"));
             }
@@ -154,14 +150,12 @@ public class AttachConfiguration {
         lastAppliedConfiguration = configuration;
     }
 
-    private Map<String, String> generateDependencyNotation(AttachServiceDefinition asd, String target) {
-        Map<String, String> dependencyNotationMap = new HashMap<>();
-        dependencyNotationMap.put("group", DEPENDENCY_GROUP);
-        dependencyNotationMap.put("name", asd.getName());
-        dependencyNotationMap.put("version", getVersion());
-        dependencyNotationMap.put("classifier", asd.getSupportedPlatform(target));
+    private String generateDependencyNotation(AttachServiceDefinition asd, String target) {
+        String classifier = asd.getSupportedPlatform(target);
+        String classifierString = classifier.isEmpty() ? "" : ":" + classifier;
+        String dependencyNotation = DEPENDENCY_GROUP + ":" + asd.getName() + ":" + getVersion() + classifierString;
 
-        project.getLogger().info("Adding dependency for {} in configuration {}: {}", asd.getService().getServiceName(), getConfiguration(), dependencyNotationMap);
-        return dependencyNotationMap;
+        project.getLogger().info("Adding dependency for {} in configuration {}: {}", asd.getService().getServiceName(), getConfiguration(), dependencyNotation);
+        return dependencyNotation;
     }
 }
